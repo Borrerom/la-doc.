@@ -1,10 +1,10 @@
 import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db, usarBase } from '../../src/core/db/db'
-import { aprobarEnlace, descartarEnlace, enlacesDeNota } from '../../src/core/db/enlaces'
+import { aprobarEnlace, crearEnlace, descartarEnlace, enlacesDeNota, TIPO_TRATA } from '../../src/core/db/enlaces'
 import { guardarNota } from '../../src/core/db/notas'
 import { crearMateria, crearMazo, crearSemestre } from '../../src/core/db/organizacion'
-import { asegurarTiposDeFabrica, TIPO_FARMACO } from '../../src/core/db/tiposNota'
+import { asegurarTiposDeFabrica, TIPO_CASO, TIPO_FARMACO, TIPO_PATOLOGIA } from '../../src/core/db/tiposNota'
 
 describe('interacciones sugeridas', () => {
   let mazoId = ''
@@ -38,5 +38,36 @@ describe('interacciones sugeridas', () => {
     await guardarNota({ id: ibuprofeno.id, tipoNotaId: TIPO_FARMACO, mazoId, valores: ibuprofeno.valores, etiquetas: [] })
     expect(await enlacesDeNota(enalapril.id)).toHaveLength(0)
     expect(await db.enlaces.count()).toBe(1)
+  })
+
+  it('sugiere trata, contraindicado y aparece en el caso, leídos desde cada lado', async () => {
+    const nota = (tipoNotaId: string, valores: Record<string, string>) => guardarNota({ tipoNotaId, mazoId, valores, etiquetas: [] })
+    const hta = await nota(TIPO_PATOLOGIA, { 'patologia-nombre': 'Presión arterial alta (hipertensión)' })
+    const dm2 = await nota(TIPO_PATOLOGIA, { 'patologia-nombre': 'Diabetes tipo 2', 'patologia-tratamiento': 'Biguanidas (metformina)' })
+    const enalapril = await farmaco({ 'farmaco-nombre': 'Enalapril', 'farmaco-indicaciones': 'Presión arterial alta' })
+    const metformina = await farmaco({
+      'farmaco-nombre': 'Metformina',
+      'farmaco-grupo': 'Biguanidas',
+      'farmaco-contraindicaciones': 'Pacientes con hipertensión descontrolada (ejemplo de prueba)',
+    })
+    const caso = await nota(TIPO_CASO, { 'caso-titulo': 'Hombre de 56 años', 'caso-respuesta': 'Indicar enalapril' })
+
+    const deHta = await enlacesDeNota(hta.id)
+    expect(deHta.map((e) => [e.relacion, e.tituloOtra])).toEqual([
+      ['No usar', 'Metformina'],
+      ['Se trata con', 'Enalapril'],
+    ])
+    // La patología nombra a la metformina en su tratamiento: el enlace va del fármaco a la patología.
+    const deMetformina = await enlacesDeNota(metformina.id)
+    expect(deMetformina.map((e) => [e.relacion, e.tituloOtra])).toContainEqual(['Trata', 'Diabetes tipo 2'])
+    expect(deMetformina.find((e) => e.otra.id === dm2.id)?.tipoEnlaceId).toBe(TIPO_TRATA)
+    expect((await enlacesDeNota(caso.id)).map((e) => [e.relacion, e.tituloOtra])).toEqual([['Incluye', 'Enalapril']])
+    expect((await enlacesDeNota(enalapril.id)).map((e) => e.relacion)).toContain('Aparece en el caso')
+
+    // A mano, desde la patología: "Se trata con" deja a la patología como destino.
+    await crearEnlace(dm2.id, `${TIPO_TRATA}<`, enalapril.id)
+    const manual = (await enlacesDeNota(enalapril.id)).find((e) => e.otra.id === dm2.id)!
+    expect(manual).toMatchObject({ relacion: 'Trata', estado: 'aprobado', origenNotaId: enalapril.id })
+    await expect(crearEnlace(dm2.id, `${TIPO_TRATA}>`, dm2.id)).rejects.toThrow()
   })
 })

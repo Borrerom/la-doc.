@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useState } from 'react'
 import { db } from '../../core/db/db'
-import { asegurarEjemplosIniciales } from '../../core/db/ejemplos'
+import { asegurarEjemplosEstructura, asegurarEjemplosIniciales } from '../../core/db/ejemplos'
 import { asegurarMateriasIniciales } from '../../core/db/materiasIniciales'
 import { crearMateria, crearMazo, crearSemestre, descendientes, listarMaterias, listarSemestres } from '../../core/db/organizacion'
 import { listarTiposNota, nombresDeTipo, TIPO_CASO, TIPO_FARMACO, TIPO_PATOLOGIA } from '../../core/db/tiposNota'
@@ -139,8 +139,8 @@ export function Materias() {
   const haySemestre = (semestres?.length ?? 0) > 0
 
   useEffect(() => {
-    // Primero Farmacología con sus ejemplos y después las otras materias, para no duplicarla.
-    if (haySemestre) void asegurarEjemplosIniciales().then(asegurarMateriasIniciales)
+    // Primero Farmacología con sus ejemplos, después las otras materias (sin duplicarla) y sus ejemplos.
+    if (haySemestre) void asegurarEjemplosIniciales().then(asegurarMateriasIniciales).then(asegurarEjemplosEstructura)
   }, [haySemestre])
 
   if (!semestres || !materias) return null

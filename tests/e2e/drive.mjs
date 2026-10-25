@@ -64,7 +64,7 @@ try {
   await p.getByText('Cuenta vinculada: desi@gmail.com. Ya quedó el primer respaldo.').waitFor()
   await p.getByText('desi@gmail.com', { exact: true }).waitFor()
   const respaldo = JSON.parse([...archivos.values()].find((a) => a.contenido).contenido)
-  if (respaldo.tablas.notas.length !== 3) throw new Error(`notas respaldadas: ${respaldo.tablas.notas.length}`)
+  if (respaldo.tablas.notas.length !== 7) throw new Error(`notas respaldadas: ${respaldo.tablas.notas.length}`)
   if (![...archivos.values()].some((a) => a.name === 'La Doc')) throw new Error('no se creó la carpeta La Doc')
   await p.screenshot({ path: 'tests/e2e/drive.png', fullPage: true })
 

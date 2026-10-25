@@ -185,8 +185,11 @@ Alternativa: Manuel genera la clave con su propia cuenta y se la carga en la app
 Primero se arma la estructura de las tres materias. La prueba con material real queda para el final, y lo que salga ahí se corrige sobre la marcha.
 
 - **Paso A (v0.19.0):** tipos de fábrica Patología (`tipo-patologia`, con los 8 campos del brief) y Caso clínico (`tipo-caso`, que se repasa entero: frente con el paciente y las preguntas, reverso con la respuesta). Se crean una sola vez las materias Morfofisiopatología 2 y Práctica Médica 1 (`materiasIniciales.ts`). Cada materia tiene su `tipoPrincipal`, que es el que sale primero al crear. Un tema puede mezclar tipos y se muestra agrupado por tipo. Todo usa la misma `FichaNota` con 🔊.
-- **Paso B:** patologías y un caso de ejemplo, con fuente citada y enlazados a los fármacos de ejemplo.
-- **Paso C:** enlaces tipados entre notas: "trata / se trata con", "contraindicado en", "interactúa con", "aparece en el caso". Unos se sugieren solos y Desi los confirma; otros los agrega a mano.
+- **Pasos B y C (v0.20.0):**
+  - Ejemplos: presión arterial alta y diabetes tipo 2 de MedlinePlus en Morfofisiopatología 2, y dos casos de práctica en Práctica Médica 1. Los casos se arman solo con datos de las fichas de ejemplo. Todo va marcado "ejemplo" y se borra de una vez desde "Organizar temas".
+  - Enlaces tipados (`enlaces.ts`, `REGLAS`): Trata/Se trata con, Contraindicado en/No usar, Interactúa con, Incluye/Aparece en el caso. Se sugieren cuando un campo nombra a otra nota, y Desi los confirma. También hay "+ Enlazar con otra nota" en cada ficha. Entre ejemplos, los enlaces vienen ya confirmados.
+  - El fármaco suma "Vía de administración" y "Farmacocinética (ADME)" (pedido de Manuel). `completarCamposDeFabrica` agrega los campos de fábrica nuevos a las instalaciones existentes, en su lugar y sin tocar lo de Desi.
+  - La farmacocinética de amoxicilina y enalapril quedó "Por validar con la sección 5.2 de la ficha técnica", porque esa sección no se pudo leer entera.
 - **Paso D:** al cargar con IA (foto, PDF o voz), la IA detecta si cada cosa es un fármaco, una patología o un caso, y llena los campos del tipo que corresponde.
 - **Al terminar:** recordarle a Manuel y darle el mensaje de WhatsApp para Desi, listo para reenviar: instalar en Android, entrar con su Gmail marcando el permiso de Drive y sacar su propia clave de Gemini.
 

@@ -973,3 +973,35 @@ details.mas-opciones > .tarjeta {
   margin: 1.25rem 0 0.5rem;
   color: var(--texto-suave);
 }
+
+/* Enlazar a mano desde una ficha. */
+.enlace-texto {
+  background: none;
+  border: none;
+  color: var(--acento);
+  padding: 8px 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.agregar-enlace {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.agregar-enlace label {
+  display: grid;
+  gap: 4px;
+}
+
+.agregar-enlace select {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--borde);
+  background: var(--superficie);
+  color: var(--texto);
+}

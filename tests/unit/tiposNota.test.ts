@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { usarBase } from '../../src/core/db/db'
+import { db, usarBase } from '../../src/core/db/db'
 import {
   CAMPO_NOMBRE_FARMACO,
   CAMPO_NOMBRE_PATOLOGIA,
@@ -29,14 +29,46 @@ describe('tipo de nota Fármaco', () => {
     expect(tipos[0].campos.map((c) => c.nombre)).toEqual([
       'Nombre genérico y comercial',
       'Grupo o familia',
+      'Vía de administración',
       'Mecanismo de acción',
+      'Farmacocinética (ADME)',
       'Indicaciones',
       'Contraindicaciones',
       'Efectos secundarios',
       'Interacciones con otros fármacos',
       'Dosis, y ajustes por edad o peso',
     ])
-    expect(tipos[0].plantillas).toHaveLength(7)
+    expect(tipos[0].plantillas).toHaveLength(9)
+  })
+
+  it('a un fármaco guardado con la versión anterior le suma vía y farmacocinética en su lugar', async () => {
+    const fabrica = tipoFarmacoDeFabrica()
+    const viejo = {
+      ...fabrica,
+      campos: fabrica.campos.filter((c) => c.id !== 'farmaco-via' && c.id !== 'farmaco-adme').map((c, i) => ({ ...c, orden: i + 1 })),
+      plantillas: fabrica.plantillas.filter((p) => !p.id.includes('farmaco-via') && !p.id.includes('farmaco-adme')),
+    }
+    const renombrado = agregarCampo(cambiarCampo(viejo, 'farmaco-dosis', { nombre: 'Posología' }), 'Uso en embarazo', CAMPO_NOMBRE_FARMACO)
+    await db.tiposNota.add(renombrado)
+    await asegurarTiposDeFabrica()
+    const [farmaco] = await listarTiposNota()
+    expect(camposOrdenados(farmaco.campos).map((c) => c.nombre)).toEqual([
+      'Nombre genérico y comercial',
+      'Grupo o familia',
+      'Vía de administración',
+      'Mecanismo de acción',
+      'Farmacocinética (ADME)',
+      'Indicaciones',
+      'Contraindicaciones',
+      'Efectos secundarios',
+      'Interacciones con otros fármacos',
+      'Posología',
+      'Uso en embarazo',
+    ])
+    expect(farmaco.plantillas.map((p) => p.id)).toContain('plantilla-farmaco-adme')
+    // Una segunda vez no cambia nada.
+    await asegurarTiposDeFabrica()
+    expect((await listarTiposNota())[0].campos).toHaveLength(11)
   })
 
   it('la patología trae los 8 campos del brief y el caso se repasa entero', async () => {
@@ -84,8 +116,8 @@ describe('tipo de nota Fármaco', () => {
   it('agrega un campo nuevo con su pregunta y rechaza duplicados', () => {
     let tipo = tipoFarmacoDeFabrica()
     tipo = agregarCampo(tipo, 'Embarazo', CAMPO_NOMBRE_FARMACO)
-    expect(tipo.campos).toHaveLength(9)
-    expect(tipo.plantillas).toHaveLength(8)
+    expect(tipo.campos).toHaveLength(11)
+    expect(tipo.plantillas).toHaveLength(10)
     expect(() => agregarCampo(tipo, ' embarazo ', CAMPO_NOMBRE_FARMACO)).toThrow('Ya existe')
   })
 
