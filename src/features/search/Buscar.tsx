@@ -1,9 +1,12 @@
+import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useState } from 'react'
+import { db } from '../../core/db/db'
 import { buscar, type Resultado } from '../../core/search/buscador'
 
 export function Buscar() {
   const [consulta, setConsulta] = useState('')
   const [resultados, setResultados] = useState<Resultado[] | null>(null)
+  const hayNotas = useLiveQuery(async () => (await db.notas.filter((n) => !n.borrada).count()) > 0)
 
   useEffect(() => {
     let vigente = true
@@ -32,6 +35,12 @@ export function Buscar() {
           autoFocus
         />
         <p className="ayuda">Funciona sin internet y tolera errores de tipeo y acentos.</p>
+        {hayNotas === false && (
+          <p>
+            Todavía no hay fármacos guardados. Entra en <a href="#/">una materia</a> y carga uno, o usa los fármacos de
+            ejemplo.
+          </p>
+        )}
       </section>
 
       {resultados && resultados.length === 0 && (
