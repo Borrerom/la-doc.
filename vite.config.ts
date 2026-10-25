@@ -35,7 +35,7 @@ export default defineConfig({
       },
       workbox: {
         // Toda la app queda guardada en el teléfono; sin internet se sirve desde ahí.
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        globPatterns: ['**/*.{js,mjs,css,html,svg,png,woff2}'],
         navigateFallback: 'index.html',
         // El motor de la voz local viene de estos CDN la primera vez y queda guardado para usarlo sin internet.
         runtimeCaching: [

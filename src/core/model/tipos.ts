@@ -126,6 +126,8 @@ export type Carga = Base & {
   intentos: number
   // Lo que Kiko le pide a la IA, por ejemplo "solo los fármacos de la página 2".
   indicacion?: string
+  // Texto de la nota de voz, si ya se transcribió (así no se transcribe dos veces).
+  transcripcion?: string
   proveedorUsado?: string
   borrador?: unknown
   error?: string

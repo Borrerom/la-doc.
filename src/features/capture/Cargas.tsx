@@ -2,7 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { procesarCola } from '../../core/ai/procesar'
 import { useProveedores } from '../../core/ai/proveedores'
 import { useConexion } from '../../app/useConexion'
-import { audioAWav } from '../../core/capture/audioWav'
+import { HERRAMIENTAS_NAVEGADOR } from '../../core/capture/herramientas'
 import type { Borrador } from '../../core/ai/extraer'
 import { archivosDeCarga, borrarCarga, reintentarCarga, useCargas } from '../../core/db/cargas'
 import { db } from '../../core/db/db'
@@ -109,7 +109,7 @@ export function Cargas() {
       )}
       {enCola && enLinea && !sinClave && (
         <div className="fila">
-          <button type="button" onClick={() => void procesarCola({ convertirAudio: audioAWav })}>
+          <button type="button" onClick={() => void procesarCola(HERRAMIENTAS_NAVEGADOR)}>
             Procesar ahora
           </button>
         </div>

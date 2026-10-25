@@ -1,7 +1,7 @@
 {
   "name": "la-doc",
   "private": true,
-  "version": "0.14.0",
+  "version": "0.15.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,7 +11,7 @@
     "test": "vitest run",
     "test:offline": "node tests/e2e/offline.mjs",
     "icons": "node scripts/make-icons.mjs",
-    "test:e2e": "node tests/e2e/offline.mjs && node tests/e2e/mazos.mjs && node tests/e2e/campos.mjs && node tests/e2e/notas.mjs && node tests/e2e/repaso.mjs && node tests/e2e/ejemplos-escuchar.mjs && node tests/e2e/ajustes-ia.mjs && node tests/e2e/captura.mjs && node tests/e2e/procesar.mjs"
+    "test:e2e": "node tests/e2e/offline.mjs && node tests/e2e/mazos.mjs && node tests/e2e/campos.mjs && node tests/e2e/notas.mjs && node tests/e2e/repaso.mjs && node tests/e2e/ejemplos-escuchar.mjs && node tests/e2e/ajustes-ia.mjs && node tests/e2e/captura.mjs && node tests/e2e/procesar.mjs && node tests/e2e/respaldo.mjs"
   },
   "dependencies": {
     "@mintplex-labs/piper-tts-web": "^1.0.5",
@@ -19,6 +19,7 @@
     "dexie": "^4.4.7",
     "dexie-react-hooks": "^4.4.0",
     "minisearch": "^7.2.0",
+    "pdfjs-dist": "^6.4.299",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "ts-fsrs": "^5.4.2",
