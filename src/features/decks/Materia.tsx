@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { db } from '../../core/db/db'
 import { borrarEjemplos, cargarEjemplos, hayEjemplos } from '../../core/db/ejemplos'
 import { arbolDeMazos, borrarMazo, crearMazo, listarMazos, renombrar, type NodoMazo } from '../../core/db/organizacion'
+import { TIPO_FARMACO } from '../../core/db/tiposNota'
 import type { Id } from '../../core/model/tipos'
 import { FormularioNombre } from '../../ui/FormularioNombre'
 
@@ -118,33 +119,36 @@ export function Materia({ id }: { id: Id }) {
         <FormularioNombre etiqueta="Nuevo mazo (tema)" boton="Agregar" alGuardar={(n) => crearMazo(n, id)} />
       </section>
 
-      <section className="tarjeta">
-        <h2>Fármacos de ejemplo</h2>
-        {conEjemplos ? (
-          <>
-            <p>Están en el mazo "Ejemplos (MedlinePlus)". Cuando ya no los necesites, bórralos de una vez.</p>
-            <button
-              type="button"
-              className="secundario peligro"
-              onClick={() => {
-                if (confirm('¿Borrar los 3 fármacos de ejemplo y sus fichas?')) void borrarEjemplos(id)
-              }}
-            >
-              Borrar ejemplos
-            </button>
-          </>
-        ) : (
-          <>
-            <p>
-              Amoxicilina, enalapril y metformina, con cada dato tomado de MedlinePlus en español, para probar las fichas y
-              el repaso.
-            </p>
-            <button type="button" className="secundario" onClick={() => cargarEjemplos(id)}>
-              Cargar 3 ejemplos
-            </button>
-          </>
-        )}
-      </section>
+      {/* Los 3 fármacos de ejemplo solo se ofrecen en materias de fármacos. */}
+      {(conEjemplos || !materia.tipoPrincipal || materia.tipoPrincipal === TIPO_FARMACO) && (
+        <section className="tarjeta">
+          <h2>Notas de ejemplo</h2>
+          {conEjemplos ? (
+            <>
+              <p>Están en el tema de ejemplos de esta materia. Cuando ya no las necesites, bórralas de una vez.</p>
+              <button
+                type="button"
+                className="secundario peligro"
+                onClick={() => {
+                  if (confirm('¿Borrar las notas de ejemplo de esta materia y sus fichas?')) void borrarEjemplos(id)
+                }}
+              >
+                Borrar ejemplos
+              </button>
+            </>
+          ) : (
+            <>
+              <p>
+                Amoxicilina, enalapril y metformina, con cada dato tomado de MedlinePlus en español, para probar las fichas y
+                el repaso.
+              </p>
+              <button type="button" className="secundario" onClick={() => cargarEjemplos(id)}>
+                Cargar 3 ejemplos
+              </button>
+            </>
+          )}
+        </section>
+      )}
     </main>
   )
 }

@@ -41,6 +41,15 @@ try {
   await p.getByLabel(/Tratamiento/).fill('Enalapril')
   await p.getByRole('button', { name: 'Guardar' }).click()
   await p.getByText('1 patología y 2 fichas, contando los subtemas.').waitFor()
+  // Su tratamiento nombra a enalapril (fármaco de ejemplo): se sugiere el enlace y Desi lo confirma.
+  await p.getByText('💡 1 sugerencia').waitFor()
+  await p.locator('summary', { hasText: 'Hipertensión arterial' }).click()
+  let abierta = p.locator('details[open]')
+  await abierta.getByText(/¿Enlazar\? Se trata con: Enalapril/).waitFor()
+  await abierta.getByRole('button', { name: '✓ Confirmar' }).click()
+  await abierta.getByText('🔗 Se trata con:').waitFor()
+  await abierta.locator('.relacionados').getByRole('link', { name: 'Enalapril' }).waitFor()
+  await p.locator('summary', { hasText: 'Hipertensión arterial' }).click()
 
   // En el mismo tema también se puede agregar un caso: aparecen dos grupos.
   await p.getByRole('link', { name: '+ Nuevo caso clínico' }).click()
@@ -53,12 +62,30 @@ try {
   await p.getByRole('heading', { name: /Casos/ }).waitFor()
   await p.locator('summary', { hasText: 'Mujer de 58 años' }).click()
   await p.getByText('58 años, 72 kg, diabética').waitFor()
-  await p.locator('details[open]').getByRole('button', { name: /Escuchar/ }).waitFor()
+  abierta = p.locator('details[open]')
+  await abierta.getByRole('button', { name: /Escuchar/ }).waitFor()
+  // Enlace a mano: el caso con la metformina.
+  await abierta.getByRole('button', { name: '+ Enlazar con otra nota' }).click()
+  await abierta.getByLabel('Relación', { exact: true }).selectOption({ label: 'Incluye' })
+  await abierta.getByLabel('Con', { exact: true }).selectOption({ label: 'Metformina' })
+  await abierta.getByRole('button', { name: 'Enlazar', exact: true }).click()
+  await abierta.getByText('🔗 Incluye:').waitFor()
+  await abierta.locator('.relacionados').getByRole('link', { name: 'Metformina' }).waitFor()
 
   // El tablero cuenta por tipo.
   await p.getByRole('link', { name: '← Inicio' }).click()
-  await p.getByText('1 tema · 1 patología · 1 caso').waitFor()
-  await p.locator('summary', { hasText: 'Práctica Médica 1' }).getByText('Sin temas todavía').waitFor()
+  await p.getByText('2 temas · 3 patologías · 1 caso').waitFor()
+  // Ejemplos de Práctica Médica 1: dos casos enlazados a las patologías y fármacos de ejemplo.
+  await p.locator('summary', { hasText: 'Práctica Médica 1' }).getByText('1 tema · 2 casos').waitFor()
+  await p.locator('summary', { hasText: 'Práctica Médica 1' }).click()
+  await p.getByRole('link', { name: /^Ejemplos/ }).last().click()
+  await p.locator('summary', { hasText: 'Hombre de 56 años' }).click()
+  abierta = p.locator('details[open]')
+  for (const nombre of ['Enalapril', 'Metformina', 'Presión arterial alta (hipertensión)', 'Diabetes tipo 2']) {
+    await abierta.locator('.relacionados').getByRole('link', { name: nombre, exact: true }).waitFor()
+  }
+  await p.screenshot({ path: 'tests/e2e/caso-ejemplo.png', fullPage: true })
+  await p.getByRole('link', { name: '← Inicio' }).click()
   await p.screenshot({ path: 'tests/e2e/estructura.png', fullPage: true })
   console.log('OK: tres materias, patologías y casos con la misma ficha, sin internet')
 } catch (e) {

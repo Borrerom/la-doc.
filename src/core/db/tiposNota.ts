@@ -12,7 +12,14 @@ type CampoInicial = [id: string, nombre: string, tipo: TipoCampo, guiaIA: string
 const CAMPOS_FARMACO: CampoInicial[] = [
   [CAMPO_NOMBRE_FARMACO, 'Nombre genérico y comercial', 'texto', 'Nombre genérico (DCI) y nombres comerciales comunes en Venezuela.'],
   ['farmaco-grupo', 'Grupo o familia', 'texto', 'Grupo farmacológico y subgrupo.'],
+  ['farmaco-via', 'Vía de administración', 'texto', 'Vías y formas en que se administra (oral, intravenosa…), y si se toma con o sin alimentos.'],
   ['farmaco-mecanismo', 'Mecanismo de acción', 'texto', 'Cómo actúa, en una o dos frases.'],
+  [
+    'farmaco-adme',
+    'Farmacocinética (ADME)',
+    'lista',
+    'Una línea para cada etapa: Absorción (biodisponibilidad, pico), Distribución (unión a proteínas), Metabolismo (dónde, metabolitos activos) y Excreción (vía, vida media).',
+  ],
   ['farmaco-indicaciones', 'Indicaciones', 'lista', 'Enfermedades o situaciones en que se usa.'],
   ['farmaco-contraindicaciones', 'Contraindicaciones', 'lista', 'Situaciones o enfermedades del paciente en que no se debe usar.'],
   ['farmaco-efectos', 'Efectos secundarios', 'lista', 'Efectos adversos, primero los frecuentes y luego los graves.'],
@@ -103,11 +110,37 @@ export function tipoCasoDeFabrica(ahora = Date.now()): TipoNota {
 
 const DE_FABRICA = [tipoFarmacoDeFabrica, tipoPatologiaDeFabrica, tipoCasoDeFabrica]
 
-// Crea los tipos de fábrica que falten. Se llama al abrir la app.
+// Campos de fábrica que llegaron en una versión posterior: se insertan en su lugar (después del
+// campo que los precede de fábrica) sin tocar los valores ni los campos que Desi agregó o renombró.
+export function completarCamposDeFabrica(guardado: TipoNota, fabrica: TipoNota): TipoNota | null {
+  const tiene = new Set(guardado.campos.map((c) => c.id))
+  const faltan = ordenados(fabrica.campos).filter((c) => !tiene.has(c.id))
+  if (faltan.length === 0) return null
+  let lista = ordenados(guardado.campos)
+  const deFabrica = ordenados(fabrica.campos)
+  for (const campo of faltan) {
+    const previo = deFabrica[deFabrica.findIndex((c) => c.id === campo.id) - 1]
+    const i = lista.findIndex((c) => c.id === previo?.id)
+    lista = [...lista.slice(0, i + 1), campo, ...lista.slice(i + 1)]
+  }
+  const plantillas = [
+    ...guardado.plantillas,
+    ...fabrica.plantillas.filter((p) => !guardado.plantillas.some((x) => x.id === p.id) && faltan.some((c) => p.reverso.includes(c.id))),
+  ]
+  return { ...guardado, campos: lista.map((c, k) => ({ ...c, orden: k + 1 })), plantillas }
+}
+
+// Crea los tipos de fábrica que falten y les suma los campos de fábrica nuevos. Se llama al abrir la app.
 export async function asegurarTiposDeFabrica() {
   for (const crear of DE_FABRICA) {
     const tipo = crear()
-    if (!(await db.tiposNota.get(tipo.id))) await db.tiposNota.add(tipo)
+    const guardado = await db.tiposNota.get(tipo.id)
+    if (!guardado) {
+      await db.tiposNota.add(tipo)
+      continue
+    }
+    const completo = completarCamposDeFabrica(guardado, tipo)
+    if (completo) await db.tiposNota.put({ ...completo, editada: Date.now() })
   }
 }
 
