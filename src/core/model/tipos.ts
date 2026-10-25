@@ -122,6 +122,8 @@ export type Carga = Base & {
   mazoId: Id
   estado: EstadoCarga
   intentos: number
+  // Lo que Kiko le pide a la IA, por ejemplo "solo los fármacos de la página 2".
+  indicacion?: string
   proveedorUsado?: string
   borrador?: unknown
   error?: string

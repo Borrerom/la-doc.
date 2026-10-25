@@ -75,6 +75,9 @@ export function Mazo({ id }: { id: Id }) {
           <a className="boton" href={`#/nota/nueva/${id}`}>
             + Nuevo fármaco
           </a>
+          <a className="boton-secundario" href={`#/capturar/${id}`}>
+            📷 Cargar con IA
+          </a>
           {notas.length > 0 && (
             <span className="selector" role="group" aria-label="Vista">
               <button type="button" className={vista === 'fichas' ? '' : 'secundario'} onClick={() => cambiarVista('fichas')}>

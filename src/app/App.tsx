@@ -1,6 +1,10 @@
+import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useState } from 'react'
+import { contarPendientes } from '../core/db/cargas'
 import { pedirAlmacenamientoPersistente, type EstadoAlmacenamiento } from '../core/storage/persist'
 import { AjustesIA } from '../features/ai/AjustesIA'
+import { Capturar } from '../features/capture/Capturar'
+import { Cargas } from '../features/capture/Cargas'
 import { Materia } from '../features/decks/Materia'
 import { Materias } from '../features/decks/Materias'
 import { EditorCampos } from '../features/note-types/EditorCampos'
@@ -15,6 +19,20 @@ import { AvisoActualizacion } from './AvisoActualizacion'
 import { useConexion } from './useConexion'
 import { useRuta } from './useRuta'
 
+function TarjetaCargas() {
+  const pendientes = useLiveQuery(contarPendientes)
+  return (
+    <a className="tarjeta enlace" href="#/cargas">
+      <h2>📥 Cargas con IA</h2>
+      <p>
+        {pendientes
+          ? `${pendientes} ${pendientes === 1 ? 'carga pendiente' : 'cargas pendientes'}.`
+          : 'Fotos, PDF y notas de voz que la IA convierte en fármacos.'}
+      </p>
+    </a>
+  )
+}
+
 function Inicio() {
   const [almacenamiento, setAlmacenamiento] = useState<EstadoAlmacenamiento | null>(null)
 
@@ -26,6 +44,8 @@ function Inicio() {
     <main>
       <ResumenRepaso />
       <Materias />
+
+      <TarjetaCargas />
 
       <a className="tarjeta enlace" href="#/escuchar">
         <h2>🎧 Modo escuchar</h2>
@@ -85,7 +105,11 @@ function App() {
         </span>
       </header>
 
-      {ruta === '/ajustes-ia' ? (
+      {ruta === '/cargas' ? (
+        <Cargas />
+      ) : ruta.startsWith('/capturar/') ? (
+        <Capturar mazoId={ruta.slice('/capturar/'.length)} />
+      ) : ruta === '/ajustes-ia' ? (
         <AjustesIA />
       ) : ruta === '/escuchar' ? (
         <Escuchar />
