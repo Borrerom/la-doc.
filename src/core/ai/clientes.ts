@@ -10,7 +10,7 @@ export type PedidoIA = {
   json?: boolean
 }
 
-export type TipoErrorIA = 'clave' | 'cuota' | 'red' | 'respuesta' | 'otro'
+export type TipoErrorIA = 'clave' | 'cuota' | 'red' | 'respuesta' | 'modelo' | 'otro'
 
 export class ErrorIA extends Error {
   tipo: TipoErrorIA
@@ -74,6 +74,10 @@ async function errorDeRespuesta(respuesta: Response): Promise<ErrorIA> {
   const texto = await respuesta.text().catch(() => '')
   if (respuesta.status === 429) {
     return new ErrorIA('cuota', 'Se acabó la cuota gratis por ahora.', segundosDeEspera(respuesta))
+  }
+  // El modelo ya no existe o cambió de nombre (Google retira modelos viejos cada tanto).
+  if (respuesta.status === 404 || (respuesta.status === 400 && /model.*(not found|not supported|no longer|deprecated)/i.test(texto))) {
+    return new ErrorIA('modelo', 'Ese modelo ya no está disponible. Cambia el modelo en Ajustes de IA.')
   }
   if (respuesta.status === 401 || respuesta.status === 403 || /api[_ ]?key/i.test(texto)) {
     return new ErrorIA('clave', 'La clave no es válida o no tiene permiso.')
