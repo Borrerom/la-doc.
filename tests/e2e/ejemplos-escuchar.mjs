@@ -92,17 +92,17 @@ try {
   await p.getByRole('button', { name: /^Bien/ }).click()
   await p.getByText('Quedan', { exact: false }).waitFor()
 
-  // Colores de la pantalla: Noche cálida se aplica y se recuerda al recargar.
+  // Colores de la pantalla: Estudiando con todo en la noche se aplica y se recuerda al recargar.
   await p.goto(`http://localhost:${PUERTO}/#/`)
   await p.getByText('⚙ Más opciones').click()
-  await p.getByLabel(/Noche cálida/).check()
+  await p.getByLabel(/Estudiando con todo en la noche/).check()
   await p.reload()
   const fondo = await p.evaluate(() => [document.documentElement.dataset.tema, getComputedStyle(document.body).backgroundColor])
   if (fondo[0] !== 'noche-calida' || fondo[1] !== 'rgb(23, 19, 15)') throw new Error(`tema: ${fondo}`)
   await p.locator('summary', { hasText: 'Farmacología 1' }).waitFor()
   await p.screenshot({ path: 'tests/e2e/noche-calida.png', fullPage: true })
   await p.getByText('⚙ Más opciones').click()
-  await p.getByLabel(/Automático/).check()
+  await p.getByLabel(/Modo Desi/).check()
 
   // Borrar los ejemplos de una vez.
   await p.goto(`http://localhost:${PUERTO}/#/`)

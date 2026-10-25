@@ -124,7 +124,7 @@ export type Carga = Base & {
   mazoId: Id
   estado: EstadoCarga
   intentos: number
-  // Lo que Kiko le pide a la IA, por ejemplo "solo los fármacos de la página 2".
+  // Lo que Desi le pide a la IA, por ejemplo "solo los fármacos de la página 2".
   indicacion?: string
   // Texto de la nota de voz, si ya se transcribió (así no se transcribe dos veces).
   transcripcion?: string

@@ -1,4 +1,4 @@
-// Paso 13: la cola se procesa sola al volver internet (Gemini simulado) y Kiko revisa antes de guardar.
+// Paso 13: la cola se procesa sola al volver internet (Gemini simulado) y Desi revisa antes de guardar.
 // Uso: npm run build && node tests/e2e/procesar.mjs
 import { createRequire } from 'node:module'
 import { spawn } from 'node:child_process'
