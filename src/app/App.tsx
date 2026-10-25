@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { pedirAlmacenamientoPersistente, type EstadoAlmacenamiento } from '../core/storage/persist'
+import { Materia } from '../features/decks/Materia'
+import { Materias } from '../features/decks/Materias'
 import { PruebaAudio } from '../features/podcast/PruebaAudio'
 import { AvisoActualizacion } from './AvisoActualizacion'
 import { useConexion } from './useConexion'
@@ -14,10 +16,7 @@ function Inicio() {
 
   return (
     <main>
-      <section className="tarjeta">
-        <h2>Farmacología 1</h2>
-        <p>Aquí van a aparecer tus mazos, el repaso del día y el modo escuchar.</p>
-      </section>
+      <Materias />
 
       <a className="tarjeta enlace" href="#/prueba-audio">
         <h2>Prueba de audio</h2>
@@ -57,7 +56,13 @@ function App() {
         </span>
       </header>
 
-      {ruta === '/prueba-audio' ? <PruebaAudio /> : <Inicio />}
+      {ruta === '/prueba-audio' ? (
+        <PruebaAudio />
+      ) : ruta.startsWith('/materia/') ? (
+        <Materia id={ruta.slice('/materia/'.length)} />
+      ) : (
+        <Inicio />
+      )}
 
       <footer className="pie">Versión {__APP_VERSION__}</footer>
       <AvisoActualizacion />

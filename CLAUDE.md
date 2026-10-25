@@ -220,4 +220,4 @@ Una app en el teléfono de su hija, que funcione sin internet, donde ella cargue
 - GitHub es solo para desarrollo. La app instalada no depende de GitHub ni de ningún servidor para funcionar.
 - Todo el texto visible está en español. Nombres de código en español cuando describen el dominio (nota, ficha, mazo).
 - Cada paso del plan de la etapa 1 termina con algo que se prueba en el teléfono.
-- Comandos: `npm run dev`, `npm test` (unitarias), `npm run build && npm run test:offline` (abre sin internet), `npm run lint`.
+- Comandos: `npm run dev`, `npm test` (unitarias), `npm run build && npm run test:e2e` (flujos en un Android simulado, incluso sin internet), `npm run lint`.

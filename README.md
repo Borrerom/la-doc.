@@ -9,5 +9,5 @@ npm install
 npm run dev            # servidor local
 npm test               # pruebas unitarias
 npm run build          # versión de producción en dist/
-npm run test:offline   # comprueba que la app abre sin internet (requiere build)
+npm run test:e2e       # flujos en un Android simulado, con y sin internet (requiere build)
 ```

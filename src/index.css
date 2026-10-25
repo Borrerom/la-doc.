@@ -172,3 +172,82 @@ button.secundario {
   border-color: var(--alerta);
   background: var(--alerta-suave);
 }
+
+.formulario {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.formulario input {
+  flex: 1 1 180px;
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+.texto-error {
+  flex-basis: 100%;
+  color: var(--alerta);
+  font-size: 0.9rem;
+}
+
+.lista {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.fila-enlace {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  color: var(--texto);
+  text-decoration: none;
+  border-bottom: 1px solid var(--borde);
+}
+
+.punto {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.mazo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--borde);
+}
+
+.mazo-nombre {
+  font-weight: 500;
+}
+
+.mazo-acciones button {
+  padding: 4px 8px;
+  font-size: 0.85rem;
+}
+
+.peligro {
+  color: var(--alerta) !important;
+}
+
+.volver {
+  color: var(--acento);
+  text-decoration: none;
+}
+
+details.tarjeta summary {
+  color: var(--acento);
+  cursor: pointer;
+}
