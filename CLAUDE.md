@@ -221,3 +221,5 @@ Una app en el teléfono de su hija, que funcione sin internet, donde ella cargue
 - Todo el texto visible está en español. Nombres de código en español cuando describen el dominio (nota, ficha, mazo).
 - Cada paso del plan de la etapa 1 termina con algo que se prueba en el teléfono.
 - Comandos: `npm run dev`, `npm test` (unitarias), `npm run build && npm run test:e2e` (flujos en un Android simulado, incluso sin internet), `npm run lint`.
+- **Formato único para toda nota** (pedido de Manuel, 2026-10-25): cada nota que Kiko cree, de cualquier tipo (fármaco, patología, caso o uno nuevo), se ve con el mismo componente `src/features/notes/FichaNota.tsx` y lleva el botón 🔊 Escuchar. La vista y la lectura se arman con los campos del tipo (`camposOrdenados` + `frasesDeNota`). No escribir vistas ni audio por tipo: un tipo o campo nuevo debe heredar formato y audio sin código extra. Cada mazo tiene además 🎧 Escuchar el mazo.
+- **Contenido de prueba visible sin pasos extra**: los 3 fármacos de ejemplo se cargan solos una vez (`asegurarEjemplosIniciales`). Las pruebas e2e que necesitan empezar vacías ponen `localStorage['la-doc:sin-ejemplos']`.

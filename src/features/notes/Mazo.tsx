@@ -3,11 +3,9 @@ import { useState } from 'react'
 import { db } from '../../core/db/db'
 import { notasDeMazo, tituloNota } from '../../core/db/notas'
 import { listarMazos, rutaDeMazo } from '../../core/db/organizacion'
-import { TIPO_FARMACO, camposOrdenados } from '../../core/db/tiposNota'
-import type { Id, Nota, TipoNota } from '../../core/model/tipos'
-import { BotonLeer } from '../podcast/BotonLeer'
-import { frasesDeNota } from '../podcast/frases'
-import { Fuentes } from './Fuentes'
+import { TIPO_FARMACO } from '../../core/db/tiposNota'
+import type { Id } from '../../core/model/tipos'
+import { FichaNota } from './FichaNota'
 import { TablaNotas } from './TablaNotas'
 
 const CLAVE_VISTA = 'la-doc:vista-mazo'
@@ -104,49 +102,5 @@ export function Mazo({ id }: { id: Id }) {
         ordenadas.map((n) => <FichaNota key={n.id} nota={n} tipo={tipo} mazo={n.mazoId !== id ? nombresMazo.get(n.mazoId) : undefined} />)
       )}
     </main>
-  )
-}
-
-function FichaNota({ nota, tipo, mazo }: { nota: Nota; tipo: TipoNota; mazo?: string }) {
-  const [primero, ...resto] = camposOrdenados(tipo.campos).filter((c) => !c.oculto)
-  return (
-    <details className="tarjeta ficha">
-      <summary>
-        <strong>{nota.valores[primero.id] ?? '(sin nombre)'}</strong>
-        {mazo && <small> · {mazo}</small>}
-      </summary>
-      <dl>
-        {resto
-          .filter((c) => nota.valores[c.id])
-          .map((c) => (
-            <div key={c.id}>
-              <dt>{c.nombre}</dt>
-              <dd>
-                {c.tipo === 'lista' ? (
-                  <ul>
-                    {nota.valores[c.id].split('\n').map((l, i) => (
-                      <li key={i}>{l}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  nota.valores[c.id]
-                )}
-              </dd>
-            </div>
-          ))}
-      </dl>
-      {nota.etiquetas.length > 0 && (
-        <p className="etiquetas">
-          {nota.etiquetas.map((e) => (
-            <span key={e}>#{e}</span>
-          ))}
-        </p>
-      )}
-      <Fuentes notaId={nota.id} />
-      <div className="fila">
-        <BotonLeer frases={frasesDeNota(nota, tipo)} />
-        <a href={`#/nota/${nota.id}`}>Editar</a>
-      </div>
-    </details>
   )
 }
