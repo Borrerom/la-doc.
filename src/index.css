@@ -251,3 +251,59 @@ details.tarjeta summary {
   color: var(--acento);
   cursor: pointer;
 }
+
+.campos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.campo {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--borde);
+}
+
+.campo.oculto .campo-nombre {
+  color: var(--texto-suave);
+}
+
+.campo-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+}
+
+.campo-nombre {
+  font-weight: 500;
+}
+
+.pregunta {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+.campo details summary {
+  font-size: 0.85rem;
+  color: var(--acento);
+  margin-top: 4px;
+}
+
+.campo textarea {
+  width: 100%;
+  min-height: 64px;
+  margin-top: 6px;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 8px;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+button:disabled {
+  opacity: 0.35;
+}
