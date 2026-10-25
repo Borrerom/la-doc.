@@ -3,9 +3,9 @@ import { db } from '../db/db'
 import { rutaDeMazo } from '../db/organizacion'
 import { TIPO_FARMACO } from '../db/tiposNota'
 import type { Carga, Id, ProveedorIA } from '../model/tipos'
-import { ErrorIA, pedirIA, transcribirConGroq, type ParteIA } from './clientes'
+import { ErrorIA, transcribirConGroq, type ParteIA } from './clientes'
 import { armarInstrucciones, interpretarRespuesta, type Borrador } from './extraer'
-import { PROVEEDORES, proveedoresDisponibles } from './proveedores'
+import { PROVEEDORES, pedirConRespaldoDeModelo, proveedoresDisponibles } from './proveedores'
 
 export const INTENTOS_MAXIMOS = 3
 // Si el proveedor no dice cuánto esperar tras agotar la cuota, se descansa este tiempo.
@@ -120,13 +120,13 @@ export async function procesarCarga(id: Id, herramientas: Herramientas = {}): Pr
         const partes = await (p.id === 'gemini'
           ? (nativas ??= partesNativas(carga, herramientas))
           : (convertidas ??= partesConvertidas(carga, herramientas, groq)))
-        const texto = await pedirIA(p, { instrucciones, partes, json: true }, herramientas.hacerFetch)
+        const { texto, modelo } = await pedirConRespaldoDeModelo(p, { instrucciones, partes, json: true }, herramientas.hacerFetch)
         const farmacos = interpretarRespuesta(texto, tipo)
         if (farmacos.length === 0) {
           errores.push(`${PROVEEDORES[p.id].nombre}: no encontró fármacos en este material.`)
           continue
         }
-        const borrador: Borrador = { farmacos, proveedor: PROVEEDORES[p.id].nombre, modelo: p.modelo, fecha: Date.now() }
+        const borrador: Borrador = { farmacos, proveedor: PROVEEDORES[p.id].nombre, modelo, fecha: Date.now() }
         await db.cargas.update(id, {
           estado: 'por_revisar',
           borrador,

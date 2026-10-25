@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
 import type { ProveedorIA } from '../model/tipos'
-import { ErrorIA, pedirIA } from './clientes'
+import { ErrorIA, pedirIA, type PedidoIA } from './clientes'
 
 export type IdProveedor = ProveedorIA['id']
 
@@ -17,7 +17,8 @@ export const PROVEEDORES: Record<IdProveedor, InfoProveedor> = {
   gemini: {
     nombre: 'Google Gemini',
     urlClave: 'https://aistudio.google.com/apikey',
-    modeloPorDefecto: 'gemini-2.5-flash',
+    // Alias que Google mueve solo al Flash más nuevo, así no se rompe cuando retira un modelo.
+    modeloPorDefecto: 'gemini-flash-latest',
     pasos: [
       'Abre aistudio.google.com/apikey e inicia sesión con tu cuenta de Google.',
       'Acepta las condiciones si te las pide.',
@@ -49,11 +50,19 @@ export const PROVEEDORES: Record<IdProveedor, InfoProveedor> = {
 
 const ORDEN_INICIAL: IdProveedor[] = ['gemini', 'groq', 'openrouter']
 
+// Si el modelo de Gemini elegido desaparece, se prueban estos en orden y se guarda el que funcione.
+export const MODELOS_RESPALDO_GEMINI = ['gemini-flash-latest', 'gemini-2.5-flash', 'gemini-flash-lite-latest']
+// Valores por defecto de versiones anteriores que se pasan al alias.
+const MODELOS_VIEJOS_POR_DEFECTO: Partial<Record<IdProveedor, string[]>> = { gemini: ['gemini-2.5-flash'] }
+
 export async function asegurarProveedores() {
   await db.transaction('rw', db.proveedoresIA, async () => {
     for (const [i, id] of ORDEN_INICIAL.entries()) {
-      if (!(await db.proveedoresIA.get(id))) {
+      const actual = await db.proveedoresIA.get(id)
+      if (!actual) {
         await db.proveedoresIA.add({ id, clave: '', modelo: PROVEEDORES[id].modeloPorDefecto, orden: i, activo: true })
+      } else if (MODELOS_VIEJOS_POR_DEFECTO[id]?.includes(actual.modelo)) {
+        await db.proveedoresIA.update(id, { modelo: PROVEEDORES[id].modeloPorDefecto })
       }
     }
   })
@@ -97,17 +106,37 @@ export async function proveedoresDisponibles(ahora = Date.now()): Promise<Provee
   )
 }
 
+// Pide a la IA y, si el modelo de Gemini ya no existe, prueba los de respaldo y se queda con el que responda.
+export async function pedirConRespaldoDeModelo(proveedor: ProveedorIA, pedido: PedidoIA, hacerFetch: typeof fetch = fetch) {
+  try {
+    return { texto: await pedirIA(proveedor, pedido, hacerFetch), modelo: proveedor.modelo }
+  } catch (e) {
+    if (!(e instanceof ErrorIA) || e.tipo !== 'modelo' || proveedor.id !== 'gemini') throw e
+    for (const modelo of MODELOS_RESPALDO_GEMINI.filter((m) => m !== proveedor.modelo)) {
+      try {
+        const texto = await pedirIA({ ...proveedor, modelo }, pedido, hacerFetch)
+        await db.proveedoresIA.update(proveedor.id, { modelo })
+        return { texto, modelo }
+      } catch (otro) {
+        if (!(otro instanceof ErrorIA) || otro.tipo !== 'modelo') throw otro
+      }
+    }
+    throw e
+  }
+}
+
 export async function probarProveedor(id: IdProveedor, hacerFetch: typeof fetch = fetch) {
   const proveedor = await db.proveedoresIA.get(id)
   if (!proveedor) return
   let prueba: NonNullable<ProveedorIA['prueba']>
   try {
-    const texto = await pedirIA(
+    const { texto, modelo } = await pedirConRespaldoDeModelo(
       proveedor,
       { instrucciones: 'Eres una prueba de conexión.', partes: [{ texto: 'Responde solo con la palabra: listo' }] },
       hacerFetch,
     )
-    prueba = { fecha: Date.now(), ok: true, mensaje: `Funciona. Respondió: "${texto.trim().slice(0, 40)}"` }
+    const cambio = modelo !== proveedor.modelo ? ` El modelo "${proveedor.modelo}" ya no existe; ahora usa "${modelo}".` : ''
+    prueba = { fecha: Date.now(), ok: true, mensaje: `Funciona. Respondió: "${texto.trim().slice(0, 40)}".${cambio}` }
   } catch (e) {
     prueba = { fecha: Date.now(), ok: false, mensaje: e instanceof ErrorIA ? e.message : String(e) }
   }

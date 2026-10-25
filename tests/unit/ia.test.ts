@@ -6,6 +6,7 @@ import {
   guardarProveedor,
   listarProveedores,
   moverProveedor,
+  pedirConRespaldoDeModelo,
   probarProveedor,
   proveedoresDisponibles,
 } from '../../src/core/ai/proveedores'
@@ -101,5 +102,31 @@ describe('proveedores guardados', () => {
     const mala = respuestaFalsa(401, 'no')
     expect(await probarProveedor('gemini', mala.hacerFetch)).toMatchObject({ ok: false })
     expect((await db.proveedoresIA.get('gemini'))?.prueba?.mensaje).toMatch(/clave/)
+  })
+
+  it('pasa el modelo por defecto viejo al alias que Google mantiene al día', async () => {
+    await db.proveedoresIA.update('gemini', { modelo: 'gemini-2.5-flash' })
+    await guardarProveedor('groq', { modelo: 'mi-modelo' })
+    await asegurarProveedores()
+    expect((await db.proveedoresIA.get('gemini'))?.modelo).toBe('gemini-flash-latest')
+    expect((await db.proveedoresIA.get('groq'))?.modelo).toBe('mi-modelo')
+  })
+
+  it('si Google retiró el modelo, prueba otro y se queda con el que responde', async () => {
+    await guardarProveedor('gemini', { clave: 'AIza1', modelo: 'gemini-viejo' })
+    const urls: string[] = []
+    const hacerFetch = (async (url: string) => {
+      urls.push(url)
+      if (url.includes('gemini-viejo')) return new Response('{"error":{"message":"models/gemini-viejo is not found"}}', { status: 404 })
+      return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: 'listo' }] } }] }), { status: 200 })
+    }) as unknown as typeof fetch
+    const p = (await db.proveedoresIA.get('gemini'))!
+    expect(await pedirConRespaldoDeModelo(p, { instrucciones: '', partes: [] }, hacerFetch)).toEqual({
+      texto: 'listo',
+      modelo: 'gemini-flash-latest',
+    })
+    expect(urls[1]).toContain('gemini-flash-latest:generateContent')
+    expect((await db.proveedoresIA.get('gemini'))?.modelo).toBe('gemini-flash-latest')
+    expect((await probarProveedor('gemini', respuestaFalsa(404, 'not found').hacerFetch))?.mensaje).toMatch(/modelo/)
   })
 })
