@@ -1,11 +1,13 @@
 :root {
-  --fondo: #f8faf9;
+  /* Paleta lila. Todo el color de la app sale de estas variables. */
+  --fondo: #faf8fc;
   --superficie: #ffffff;
-  --texto: #1f2a28;
-  --texto-suave: #5b6b68;
-  --borde: #dfe7e5;
-  --acento: #0f766e;
-  --acento-suave: #ccfbf1;
+  --texto: #2a2433;
+  --texto-suave: #675d74;
+  --borde: #e7e1ef;
+  --acento: #7c3aed;
+  --acento-suave: #ede9fe;
+  --sobre-acento: #ffffff;
   --alerta: #b45309;
   --alerta-suave: #fef3c7;
 
@@ -18,13 +20,14 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --fondo: #0f1514;
-    --superficie: #182120;
-    --texto: #e6eeec;
-    --texto-suave: #9fb1ad;
-    --borde: #2a3634;
-    --acento: #2dd4bf;
-    --acento-suave: #134e4a;
+    --fondo: #15121a;
+    --superficie: #1f1a26;
+    --texto: #ece8f2;
+    --texto-suave: #b0a7bd;
+    --borde: #352d40;
+    --acento: #c4b5fd;
+    --acento-suave: #3b2a5c;
+    --sobre-acento: #1c1430;
     --alerta: #fbbf24;
     --alerta-suave: #451a03;
   }
@@ -141,7 +144,7 @@ button {
   border-radius: 8px;
   padding: 8px 14px;
   background: var(--acento);
-  color: #fff;
+  color: var(--sobre-acento);
 }
 
 button.secundario {
@@ -322,7 +325,7 @@ a.mazo-nombre {
 
 .boton {
   background: var(--acento);
-  color: #fff;
+  color: var(--sobre-acento);
 }
 
 .boton-secundario {
