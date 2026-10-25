@@ -26,7 +26,7 @@ try {
   await p.getByRole('button', { name: 'Crear' }).click()
   await p.locator('summary', { hasText: 'Más opciones' }).click()
   await p.getByRole('link', { name: /Manual de uso/ }).click()
-  await p.getByRole('heading', { name: 'Cómo usar La Doc' }).waitFor()
+  await p.getByRole('heading', { name: 'Cómo usar Doc Desi' }).waitFor()
   if ((await p.evaluate(() => document.documentElement.dataset.tema)) !== 'noche-calida') throw new Error('El manual no usa los colores elegidos')
 
   const visibles = () => p.locator('.error:visible').count()
@@ -43,7 +43,7 @@ try {
   await p.evaluate(() => window.scrollTo(0, 0))
   await p.screenshot({ path: 'tests/e2e/manual.png', fullPage: false })
 
-  await p.getByRole('link', { name: '‹ Volver a La Doc' }).click()
+  await p.getByRole('link', { name: '‹ Volver a Doc Desi' }).click()
   await p.locator('summary', { hasText: 'Farmacología 1' }).waitFor()
   console.log(`OK: manual sin internet, ${todos} mensajes de error y buscador`)
 } catch (e) {

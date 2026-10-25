@@ -124,7 +124,7 @@ export async function pedirIA(proveedor: ProveedorIA, pedido: PedidoIA, hacerFet
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${proveedor.clave.trim()}`,
-          ...(proveedor.id === 'openrouter' ? { 'X-Title': 'La Doc' } : {}),
+          ...(proveedor.id === 'openrouter' ? { 'X-Title': 'Doc Desi' } : {}),
         },
         body: JSON.stringify(cuerpoCompatible(proveedor.modelo, pedido)),
       })

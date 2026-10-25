@@ -258,3 +258,7 @@ Una app en el teléfono de su hija, que funcione sin internet, donde ella cargue
 - Cita los textos y mensajes de error reales de la app. **Si cambias un botón, una pantalla o un mensaje de error, actualiza también el manual** (y su número de versión al pie).
 - Los bloques entre `<!-- APP-INICIO -->` y `<!-- APP-FIN -->` solo sirven dentro de la app; se quitan para publicar la copia que se comparte por WhatsApp como Artifact.
 - Prueba e2e: `tests/e2e/manual.mjs`.
+
+## Nombre visible y logo (v0.23.0)
+- Manuel decidió (2026-10-25) que la app se **muestra** como «Doc Desi»: manifest (name/short_name), título, cabecera, manual y textos visibles. Todo lo demás sigue igual: repo `la-doc.`, URL, claves `la-doc:` de localStorage, base local, carpeta "La Doc" de Drive (`NOMBRE_CARPETA`, no cambiarla o se pierde el respaldo) y proyecto de Google Cloud.
+- Los íconos (`public/icons/*`, `public/favicon.png`) salen del retrato de Desi con bata, recortado en la cara; el maskable deja la cara dentro de la zona segura del 80 %.

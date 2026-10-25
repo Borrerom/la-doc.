@@ -26,7 +26,7 @@ export function AvisoActualizacion() {
   if (hayVersionNueva) {
     return (
       <div className="aviso" role="status">
-        <span>Hay una versión nueva de La Doc.</span>
+        <span>Hay una versión nueva de Doc Desi.</span>
         <button type="button" onClick={() => updateServiceWorker(true)}>
           Actualizar
         </button>

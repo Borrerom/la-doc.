@@ -69,7 +69,7 @@ export class Reproductor {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: this.pistas[indice].titulo,
-        artist: 'La Doc',
+        artist: 'Doc Desi',
         album: `Ficha ${indice + 1} de ${this.pistas.length}`,
         artwork: [{ src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' }],
       })

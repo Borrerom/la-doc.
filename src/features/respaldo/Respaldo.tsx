@@ -110,7 +110,7 @@ export function Respaldo() {
       <section className="tarjeta">
         <h2>☁️ Respaldo en Google Drive</h2>
         <p>
-          La Doc guarda una copia de tus fichas, tu repaso y tus ajustes en una carpeta "La Doc" de tu Drive. Solo puede ver
+          Doc Desi guarda una copia de tus fichas, tu repaso y tus ajustes en una carpeta "La Doc" de tu Drive. Solo puede ver
           esa carpeta, nunca el resto de tu Drive. Con internet se respalda sola cada vez que hay cambios.
         </p>
         {!enLinea && <p className="ayuda">Ahora no hay internet: el respaldo se hará cuando vuelva.</p>}
