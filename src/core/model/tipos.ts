@@ -92,6 +92,7 @@ export type EstadoRepaso = {
   dificultad: number
   diasTranscurridos: number
   diasProgramados: number
+  pasosAprendizaje: number
   repeticiones: number
   fallos: number
   estado: EstadoFsrs

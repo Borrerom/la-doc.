@@ -6,6 +6,8 @@ import { EditorCampos } from '../features/note-types/EditorCampos'
 import { EditorNota } from '../features/notes/EditorNota'
 import { Mazo } from '../features/notes/Mazo'
 import { PruebaAudio } from '../features/podcast/PruebaAudio'
+import { Repaso } from '../features/review/Repaso'
+import { ResumenRepaso } from '../features/review/ResumenRepaso'
 import { AvisoActualizacion } from './AvisoActualizacion'
 import { useConexion } from './useConexion'
 import { useRuta } from './useRuta'
@@ -19,6 +21,7 @@ function Inicio() {
 
   return (
     <main>
+      <ResumenRepaso />
       <Materias />
 
       <a className="tarjeta enlace" href="#/tipo/tipo-farmaco">
@@ -64,7 +67,9 @@ function App() {
         </span>
       </header>
 
-      {ruta === '/prueba-audio' ? (
+      {ruta === '/repaso' ? (
+        <Repaso />
+      ) : ruta === '/prueba-audio' ? (
         <PruebaAudio />
       ) : ruta.startsWith('/tipo/') ? (
         <EditorCampos id={ruta.slice('/tipo/'.length)} />
