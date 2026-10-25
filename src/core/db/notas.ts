@@ -1,6 +1,7 @@
 import { ulid } from 'ulid'
 import type { Id, Nota, TipoNota } from '../model/tipos'
 import { db } from './db'
+import { proponerInteracciones } from './enlaces'
 import { sincronizarFichas } from './fichas'
 import { descendientes, listarMazos } from './organizacion'
 import { camposOrdenados } from './tiposNota'
@@ -63,6 +64,7 @@ export async function guardarNota(datos: {
   }
   await db.notas.put(nota)
   await sincronizarFichas(nota.id)
+  await proponerInteracciones()
   return nota
 }
 

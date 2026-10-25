@@ -950,3 +950,19 @@ details.mas-opciones > .tarjeta {
 .tema-dia { border-left-color: #ede9fe; }
 .tema-noche { border-left-color: #352d40; }
 .tema-noche-calida { border-left-color: #f0b46a; }
+
+.relacionados {
+  margin-top: 8px;
+}
+
+.relacionados p {
+  margin: 4px 0;
+}
+
+.sugerencia {
+  border: 1px dashed var(--acento);
+  background: var(--acento-suave);
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin-top: 8px;
+}
