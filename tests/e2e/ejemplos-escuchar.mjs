@@ -29,15 +29,21 @@ try {
 
   await p.getByLabel('Nombre del semestre').fill('Semestre 5')
   await p.getByRole('button', { name: 'Crear' }).click()
-  await p.getByRole('button', { name: '+ Agregar materia' }).click()
-  await p.getByRole('button', { name: 'Agregar' }).click()
+  // Farmacología 1 y sus 3 ejemplos aparecen solos al crear el semestre.
   await p.getByRole('link', { name: 'Farmacología 1' }).click()
-  await p.getByRole('button', { name: 'Cargar 3 ejemplos' }).click()
   await p.getByRole('link', { name: 'Ejemplos (MedlinePlus)' }).click()
-  await p.getByText('3 fármacos y 18 fichas, contando los submazos.').waitFor()
+  await p.getByText('3 fármacos y 21 fichas, contando los submazos.').waitFor()
   await p.getByText('Metformina', { exact: true }).click()
   await p.getByRole('link', { name: 'Metformina: MedlinePlus medicinas' }).waitFor()
+  await p.getByRole('link', { name: /ficha técnica \(CIMA, AEMPS\)/ }).first().waitFor()
   await p.screenshot({ path: 'tests/e2e/ejemplos.png', fullPage: true })
+
+  // El buscador los encuentra, también sin acentos.
+  await p.goto(`http://localhost:${PUERTO}/#/buscar`)
+  for (const nombre of ['amoxicilina', 'enalapril', 'metformina']) {
+    await p.getByRole('searchbox', { name: 'Buscar' }).fill(nombre)
+    await p.locator('.resultados strong', { hasText: new RegExp(`^${nombre}$`, 'i') }).first().waitFor()
+  }
 
   // Modo escuchar con la voz del teléfono, en manual: muestra la ficha en pantalla.
   await p.goto(`http://localhost:${PUERTO}/#/escuchar`)
@@ -47,10 +53,10 @@ try {
   await p.getByLabel(/Manual/).click()
   await p.waitForFunction(() => document.querySelectorAll('input[type=radio]')[3].checked)
   await p.getByRole('button', { name: '▶ Empezar' }).click()
-  await p.getByText('Ficha 1 de 18').waitFor()
+  await p.getByText('Ficha 1 de 20').waitFor()
   await p.getByRole('button', { name: 'Continuar' }).click()
   await p.getByRole('button', { name: 'Continuar' }).click()
-  await p.getByText('Ficha 2 de 18').waitFor()
+  await p.getByText('Ficha 2 de 20').waitFor()
   await p.screenshot({ path: 'tests/e2e/escuchar.png', fullPage: true })
   await p.getByRole('button', { name: 'Detener' }).click()
   await p.getByRole('button', { name: '▶ Empezar' }).waitFor()

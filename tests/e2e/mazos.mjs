@@ -15,6 +15,8 @@ const browser = await chromium.launch()
 let fallo = null
 try {
   const contexto = await browser.newContext({ ...devices['Pixel 7'], locale: 'es-VE' })
+  // Esta prueba empieza sin los fármacos de ejemplo.
+  await contexto.addInitScript(() => localStorage.setItem('la-doc:sin-ejemplos', '1'))
   const p = await contexto.newPage()
   p.on('dialog', (d) => d.accept())
   await p.goto(`http://localhost:${PUERTO}/`)
