@@ -4,7 +4,7 @@ import { escribirWav, type Pcm } from './wav'
 // En modo manual, al terminar cada pista espera a que ella toque reproducir o "siguiente".
 
 export type Pista = { titulo: string; audio: Pcm }
-export type EstadoReproductor = { indice: number; total: number; sonando: boolean; esperando: boolean }
+export type EstadoReproductor = { indice: number; total: number; sonando: boolean; esperando: boolean; segundo: number }
 
 export class Reproductor {
   private elemento = new Audio()
@@ -23,6 +23,7 @@ export class Reproductor {
     this.elemento.addEventListener('ended', () => this.alTerminar())
     this.elemento.addEventListener('play', () => this.avisar())
     this.elemento.addEventListener('pause', () => this.avisar())
+    this.elemento.addEventListener('timeupdate', () => this.avisar())
     this.registrarControles()
   }
 
@@ -106,6 +107,7 @@ export class Reproductor {
       total: this.pistas.length,
       sonando: !this.elemento.paused,
       esperando: this.esperando,
+      segundo: this.elemento.currentTime,
     })
   }
 }

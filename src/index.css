@@ -622,3 +622,63 @@ main {
   font-size: 0.85rem;
   color: var(--texto-suave);
 }
+
+.fuentes {
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+  margin: 8px 0;
+}
+
+.fuentes a {
+  color: var(--acento);
+}
+
+button.icono {
+  background: transparent;
+  color: var(--texto);
+  padding: 4px 8px;
+  font-size: 1.1rem;
+  border: 1px solid var(--borde);
+}
+
+button.icono.activo {
+  background: var(--acento-suave);
+  border-color: var(--acento);
+}
+
+.ajustes-escucha label {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.ajustes-escucha fieldset {
+  border: 0;
+  padding: 0;
+  margin: 12px 0 0;
+}
+
+.ajustes-escucha legend {
+  font-weight: 500;
+}
+
+.ajustes-escucha fieldset label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.ajustes-escucha select {
+  font: inherit;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--borde);
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+.controles-escucha button {
+  flex: 1;
+  padding: 14px;
+}

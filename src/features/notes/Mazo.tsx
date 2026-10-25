@@ -5,6 +5,7 @@ import { notasDeMazo, tituloNota } from '../../core/db/notas'
 import { listarMazos, rutaDeMazo } from '../../core/db/organizacion'
 import { TIPO_FARMACO, camposOrdenados } from '../../core/db/tiposNota'
 import type { Id, Nota, TipoNota } from '../../core/model/tipos'
+import { Fuentes } from './Fuentes'
 import { TablaNotas } from './TablaNotas'
 
 const CLAVE_VISTA = 'la-doc:vista-mazo'
@@ -131,6 +132,7 @@ function FichaNota({ nota, tipo, mazo }: { nota: Nota; tipo: TipoNota; mazo?: st
           ))}
         </p>
       )}
+      <Fuentes notaId={nota.id} />
       <a href={`#/nota/${nota.id}`}>Editar</a>
     </details>
   )

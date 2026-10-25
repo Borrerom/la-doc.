@@ -5,6 +5,7 @@ import { fichasDeNota, verFicha } from '../../core/db/fichas'
 import { borrarNota, guardarNota, limpiarEtiquetas } from '../../core/db/notas'
 import { TIPO_FARMACO, camposOrdenados } from '../../core/db/tiposNota'
 import type { Id } from '../../core/model/tipos'
+import { Fuentes } from './Fuentes'
 
 // Crea una nota nueva en un mazo (notaId vacío) o edita una existente.
 export function EditorNota({ notaId, mazoId }: { notaId?: Id; mazoId?: Id }) {
@@ -65,6 +66,7 @@ function Formulario(props: {
       </a>
       <form className="tarjeta editor-nota" onSubmit={guardar}>
         <h2>{props.notaId ? 'Editar' : 'Nuevo'} {tipo.nombre.toLowerCase()}</h2>
+        {props.notaId && <Fuentes notaId={props.notaId} />}
         {campos.map((c, i) => (
           <label key={c.id}>
             <span>
