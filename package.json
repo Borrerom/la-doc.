@@ -1,7 +1,7 @@
 {
   "name": "la-doc",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,6 +13,7 @@
     "icons": "node scripts/make-icons.mjs"
   },
   "dependencies": {
+    "@mintplex-labs/piper-tts-web": "^1.0.5",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

@@ -37,6 +37,19 @@ export default defineConfig({
         // Toda la app queda guardada en el teléfono; sin internet se sirve desde ahí.
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         navigateFallback: 'index.html',
+        // El motor de la voz local viene de estos CDN la primera vez y queda guardado para usarlo sin internet.
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) =>
+              url.hostname === 'cdnjs.cloudflare.com' || url.hostname === 'cdn.jsdelivr.net',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'motor-voz',
+              expiration: { maxEntries: 20 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
       },
     }),
   ],

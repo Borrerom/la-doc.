@@ -45,7 +45,7 @@ body {
   flex-direction: column;
   max-width: 640px;
   margin: 0 auto;
-  padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+  padding: env(safe-area-inset-top) 16px calc(96px + env(safe-area-inset-bottom));
 }
 
 .barra {
@@ -147,4 +147,28 @@ button {
 button.secundario {
   background: transparent;
   color: var(--acento);
+}
+
+.barra h1 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.enlace {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.fila {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.error {
+  border-color: var(--alerta);
+  background: var(--alerta-suave);
 }
