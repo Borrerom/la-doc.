@@ -180,6 +180,16 @@ Alternativa: Manuel genera la clave con su propia cuenta y se la carga en la app
 
 **Piloto y cambio de cuenta:** el piloto usa la cuenta de Google de Manuel. La app debe tener en Ajustes una opción para desvincular la cuenta y vincular otra, pensando en que otros estudiantes la usen. Al cambiar de cuenta, el nuevo estudiante entra con su propio correo, carga su propia clave de Gemini y respalda en su propio Drive. Las fichas y la clave de la cuenta anterior no quedan a la vista del nuevo usuario.
 
+### Estructura completa antes del piloto (decisión de Manuel, 2026-10-25, Opción 1)
+
+Primero se arma la estructura de las tres materias. La prueba con material real queda para el final, y lo que salga ahí se corrige sobre la marcha.
+
+- **Paso A (v0.19.0):** tipos de fábrica Patología (`tipo-patologia`, con los 8 campos del brief) y Caso clínico (`tipo-caso`, que se repasa entero: frente con el paciente y las preguntas, reverso con la respuesta). Se crean una sola vez las materias Morfofisiopatología 2 y Práctica Médica 1 (`materiasIniciales.ts`). Cada materia tiene su `tipoPrincipal`, que es el que sale primero al crear. Un tema puede mezclar tipos y se muestra agrupado por tipo. Todo usa la misma `FichaNota` con 🔊.
+- **Paso B:** patologías y un caso de ejemplo, con fuente citada y enlazados a los fármacos de ejemplo.
+- **Paso C:** enlaces tipados entre notas: "trata / se trata con", "contraindicado en", "interactúa con", "aparece en el caso". Unos se sugieren solos y Desi los confirma; otros los agrega a mano.
+- **Paso D:** al cargar con IA (foto, PDF o voz), la IA detecta si cada cosa es un fármaco, una patología o un caso, y llena los campos del tipo que corresponde.
+- **Al terminar:** recordarle a Manuel y darle el mensaje de WhatsApp para Desi, listo para reenviar: instalar en Android, entrar con su Gmail marcando el permiso de Drive y sacar su propia clave de Gemini.
+
 ### Hoja de ruta por etapas
 
 En cada etapa ella prueba la app con material real antes de pasar a la siguiente.

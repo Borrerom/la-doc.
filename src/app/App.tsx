@@ -11,7 +11,7 @@ import { useRespaldoAutomatico } from './useRespaldoAutomatico'
 import { Respaldo, TarjetaRespaldo } from '../features/respaldo/Respaldo'
 import { Materia } from '../features/decks/Materia'
 import { AgregarSemestre, Materias } from '../features/decks/Materias'
-import { EditorCampos } from '../features/note-types/EditorCampos'
+import { CamposDeTipos, EditorCampos } from '../features/note-types/EditorCampos'
 import { EditorNota } from '../features/notes/EditorNota'
 import { Mazo } from '../features/notes/Mazo'
 import { Escuchar } from '../features/podcast/Escuchar'
@@ -69,10 +69,7 @@ function Inicio() {
           <p>Claves gratis de Gemini, Groq y OpenRouter para llenar fichas desde fotos, PDF y voz.</p>
         </a>
 
-        <a className="tarjeta enlace" href="#/tipo/tipo-farmaco">
-          <h2>Campos de la ficha de fármaco</h2>
-          <p>Agrega, renombra u oculta los datos que lleva cada fármaco.</p>
-        </a>
+        <CamposDeTipos />
 
         <a className="tarjeta enlace" href="#/prueba-audio">
           <h2>Prueba de audio</h2>
@@ -147,7 +144,8 @@ function App() {
       ) : ruta.startsWith('/mazo/') ? (
         <Mazo id={ruta.slice('/mazo/'.length)} />
       ) : ruta.startsWith('/nota/nueva/') ? (
-        <EditorNota mazoId={ruta.slice('/nota/nueva/'.length)} />
+        // "/nota/nueva/<mazo>/<tipo>"; sin tipo, fármaco (enlaces de versiones anteriores).
+        <EditorNota mazoId={ruta.split('/')[3]} tipoId={ruta.split('/')[4]} />
       ) : ruta.startsWith('/nota/') ? (
         <EditorNota notaId={ruta.slice('/nota/'.length)} />
       ) : ruta.startsWith('/materia/') ? (

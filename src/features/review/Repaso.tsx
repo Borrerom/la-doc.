@@ -83,7 +83,7 @@ export function Repaso() {
           <p>
             {hechasHoy > 0
               ? `Repasaste ${hechasHoy} ${hechasHoy === 1 ? 'ficha' : 'fichas'} hoy. Las demás vuelven cuando toca.`
-              : 'Carga fármacos en tus mazos y sus fichas aparecerán aquí.'}
+              : 'Carga fármacos, patologías o casos en tus temas y sus fichas aparecerán aquí.'}
           </p>
         </section>
       </main>

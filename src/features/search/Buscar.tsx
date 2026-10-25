@@ -29,7 +29,7 @@ export function Buscar() {
           className="filtro buscador"
           type="search"
           aria-label="Buscar"
-          placeholder="Buscar fármaco, efecto, etiqueta…"
+          placeholder="Buscar fármaco, patología, caso, etiqueta…"
           value={consulta}
           onChange={(e) => setConsulta(e.target.value)}
           autoFocus
@@ -37,8 +37,7 @@ export function Buscar() {
         <p className="ayuda">Funciona sin internet y tolera errores de tipeo y acentos.</p>
         {hayNotas === false && (
           <p>
-            Todavía no hay fármacos guardados. Entra en <a href="#/">una materia</a> y carga uno, o usa los fármacos de
-            ejemplo.
+            Todavía no hay nada guardado. Entra en <a href="#/">una materia</a> y carga algo, o usa los ejemplos.
           </p>
         )}
       </section>

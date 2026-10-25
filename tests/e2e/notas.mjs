@@ -54,7 +54,7 @@ try {
   await cargar('Antibióticos', 'Azitromicina', 'Macrólidos', 'Insuficiencia hepática grave')
 
   // Vista fichas del mazo padre: ve las 3, incluida la del submazo.
-  await p.getByText('3 fármacos y 6 fichas, contando los submazos.').waitFor()
+  await p.getByText('3 fármacos y 6 fichas, contando los subtemas.').waitFor()
   await p.getByText('Ceftriaxona', { exact: true }).click()
   await p.getByText('Neonatos con hiperbilirrubinemia').waitFor()
 
@@ -89,7 +89,7 @@ try {
   await p.getByLabel('Mecanismo de acción').fill('Inhibe la síntesis de la {{c1::pared bacteriana}}')
   await p.getByRole('button', { name: 'Guardar' }).click()
   await p.waitForURL(/#\/mazo\//)
-  await p.getByText('3 fármacos y 8 fichas, contando los submazos.').waitFor()
+  await p.getByText('3 fármacos y 8 fichas, contando los subtemas.').waitFor()
   await p.goBack()
   await p.getByText('Fichas de repaso (4)').waitFor()
   await p.getByText('Mecanismo de acción: Inhibe la síntesis de la […]', { exact: true }).waitFor()
