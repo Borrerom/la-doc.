@@ -591,3 +591,34 @@ main {
 .repaso-fin {
   text-align: center;
 }
+
+.barra-derecha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.boton-buscar {
+  font-size: 1.2rem;
+  text-decoration: none;
+  padding: 4px;
+}
+
+.buscador {
+  width: 100%;
+  font-size: 1.05rem;
+}
+
+.resultados a {
+  display: grid;
+  gap: 2px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--borde);
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.resultados span {
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}

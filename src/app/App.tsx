@@ -6,6 +6,7 @@ import { EditorCampos } from '../features/note-types/EditorCampos'
 import { EditorNota } from '../features/notes/EditorNota'
 import { Mazo } from '../features/notes/Mazo'
 import { PruebaAudio } from '../features/podcast/PruebaAudio'
+import { Buscar } from '../features/search/Buscar'
 import { Repaso } from '../features/review/Repaso'
 import { ResumenRepaso } from '../features/review/ResumenRepaso'
 import { AvisoActualizacion } from './AvisoActualizacion'
@@ -62,12 +63,19 @@ function App() {
         <h1>
           <a href="#/">La Doc</a>
         </h1>
-        <span className={enLinea ? 'estado en-linea' : 'estado sin-internet'} data-testid="conexion">
-          {enLinea ? 'Con internet' : 'Sin internet'}
+        <span className="barra-derecha">
+          <a href="#/buscar" className="boton-buscar" aria-label="Buscar">
+            🔍
+          </a>
+          <span className={enLinea ? 'estado en-linea' : 'estado sin-internet'} data-testid="conexion">
+            {enLinea ? 'Con internet' : 'Sin internet'}
+          </span>
         </span>
       </header>
 
-      {ruta === '/repaso' ? (
+      {ruta === '/buscar' ? (
+        <Buscar />
+      ) : ruta === '/repaso' ? (
         <Repaso />
       ) : ruta === '/prueba-audio' ? (
         <PruebaAudio />

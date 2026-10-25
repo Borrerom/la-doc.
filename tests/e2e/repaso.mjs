@@ -52,7 +52,15 @@ try {
 
   await p.reload()
   await p.getByText('¡Listo por hoy!').waitFor({ timeout: 5000 })
-  console.log('OK: repaso del día con los cuatro botones, guardado sin internet')
+
+  // Paso 8: buscador sin internet, con error de tipeo y sin acento.
+  await p.getByRole('link', { name: 'Buscar' }).click()
+  await p.getByRole('searchbox', { name: 'Buscar' }).fill('metfromina')
+  await p.getByText('Metformina', { exact: true }).waitFor()
+  await p.getByRole('searchbox', { name: 'Buscar' }).fill('insuficiencia renal')
+  await p.getByText('Contraindicaciones:').waitFor()
+  await p.screenshot({ path: 'tests/e2e/buscar.png', fullPage: true })
+  console.log('OK: repaso del día con los cuatro botones y buscador, sin internet')
 } catch (e) {
   fallo = e
 } finally {
