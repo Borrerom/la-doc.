@@ -94,7 +94,24 @@ try {
   await p.getByText('Fichas de repaso (4)').waitFor()
   await p.getByText('Mecanismo de acción: Inhibe la síntesis de la […]', { exact: true }).waitFor()
   await p.screenshot({ path: 'tests/e2e/fichas.png', fullPage: true })
-  console.log('OK: fármacos cargados a mano, vistos como fichas y como tabla, y sus fichas de repaso, sin internet')
+
+  // Paso 15: interacción sugerida entre dos fármacos cargados, que Desi confirma.
+  await p.goto(`http://localhost:${PUERTO}/#/materia/${idMateria}`)
+  await p.getByRole('link', { name: 'Antibióticos', exact: true }).click()
+  await p.getByRole('link', { name: '+ Nuevo fármaco' }).click()
+  await p.getByLabel('Nombre genérico y comercial').fill('Warfarina')
+  await p.getByLabel('Grupo o familia').fill('Anticoagulantes')
+  await p.getByLabel(/Interacciones/).fill('Azitromicina: aumenta el efecto anticoagulante')
+  await p.getByRole('button', { name: 'Guardar' }).click()
+  await p.getByText('💡 1 sugerencia').first().waitFor()
+  await p.locator('summary', { hasText: 'Warfarina' }).click()
+  const abierta = p.locator('details[open]')
+  await abierta.getByText('«Azitromicina: aumenta el efecto anticoagulante»').waitFor()
+  await abierta.getByRole('button', { name: '✓ Confirmar' }).click()
+  await abierta.locator('.relacionados').getByRole('link', { name: 'Azitromicina (Zithromax)' }).waitFor()
+  if (await p.getByText('💡 1 sugerencia').count()) throw new Error('la sugerencia sigue pendiente')
+  await p.screenshot({ path: 'tests/e2e/interacciones.png', fullPage: true })
+  console.log('OK: fármacos cargados a mano, vistos como fichas y como tabla, sus fichas de repaso e interacciones sugeridas, sin internet')
 } catch (e) {
   fallo = e
 } finally {
