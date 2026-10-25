@@ -172,3 +172,301 @@ button.secundario {
   border-color: var(--alerta);
   background: var(--alerta-suave);
 }
+
+.formulario {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.formulario input {
+  flex: 1 1 180px;
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+.texto-error {
+  flex-basis: 100%;
+  color: var(--alerta);
+  font-size: 0.9rem;
+}
+
+.lista {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.fila-enlace {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  color: var(--texto);
+  text-decoration: none;
+  border-bottom: 1px solid var(--borde);
+}
+
+.punto {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.mazo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--borde);
+}
+
+.mazo-nombre {
+  font-weight: 500;
+}
+
+.mazo-acciones button {
+  padding: 4px 8px;
+  font-size: 0.85rem;
+}
+
+.peligro {
+  color: var(--alerta) !important;
+}
+
+.volver {
+  color: var(--acento);
+  text-decoration: none;
+}
+
+details.tarjeta summary {
+  color: var(--acento);
+  cursor: pointer;
+}
+
+.campos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.campo {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--borde);
+}
+
+.campo.oculto .campo-nombre {
+  color: var(--texto-suave);
+}
+
+.campo-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+}
+
+.campo-nombre {
+  font-weight: 500;
+}
+
+.pregunta {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+.campo details summary {
+  font-size: 0.85rem;
+  color: var(--acento);
+  margin-top: 4px;
+}
+
+.campo textarea {
+  width: 100%;
+  min-height: 64px;
+  margin-top: 6px;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 8px;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+button:disabled {
+  opacity: 0.35;
+}
+
+a.mazo-nombre {
+  color: var(--texto);
+}
+
+.boton,
+.boton-secundario {
+  display: inline-block;
+  border-radius: 8px;
+  padding: 8px 14px;
+  text-decoration: none;
+}
+
+.boton {
+  background: var(--acento);
+  color: #fff;
+}
+
+.boton-secundario {
+  color: var(--acento);
+}
+
+.selector {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.editor-nota label {
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.editor-nota label span {
+  font-weight: 500;
+}
+
+.editor-nota small {
+  font-weight: 400;
+  color: var(--texto-suave);
+}
+
+.editor-nota input,
+.editor-nota textarea,
+.filtro {
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  background: var(--fondo);
+  color: var(--texto);
+  width: 100%;
+}
+
+.ficha summary {
+  cursor: pointer;
+}
+
+.ficha dl {
+  margin: 8px 0;
+}
+
+.ficha dt {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--acento);
+  margin-top: 8px;
+}
+
+.ficha dd {
+  margin: 2px 0 0;
+  white-space: pre-line;
+}
+
+.ficha dd ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+
+.etiquetas span {
+  background: var(--acento-suave);
+  color: var(--acento);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.filtro {
+  flex: 1 1 160px;
+  width: auto;
+}
+
+.columnas {
+  position: relative;
+}
+
+.columnas summary {
+  color: var(--acento);
+  cursor: pointer;
+  padding: 8px 4px;
+}
+
+.columnas label {
+  display: block;
+  padding: 4px 0;
+  font-size: 0.9rem;
+}
+
+.tabla-contenedor {
+  overflow-x: auto;
+  margin-top: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabla {
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  min-width: 100%;
+}
+
+.tabla th,
+.tabla td {
+  text-align: left;
+  vertical-align: top;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--borde);
+  min-width: 140px;
+}
+
+.tabla th {
+  position: sticky;
+  top: 0;
+  background: var(--superficie);
+  cursor: pointer;
+  user-select: none;
+}
+
+.tabla td:first-child,
+.tabla th:first-child {
+  position: sticky;
+  left: 0;
+  background: var(--superficie);
+}
+
+.celda {
+  white-space: pre-line;
+}
+
+main {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.tabla a {
+  color: var(--acento);
+  font-weight: 500;
+}

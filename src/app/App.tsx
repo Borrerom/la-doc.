@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react'
 import { pedirAlmacenamientoPersistente, type EstadoAlmacenamiento } from '../core/storage/persist'
+import { Materia } from '../features/decks/Materia'
+import { Materias } from '../features/decks/Materias'
+import { EditorCampos } from '../features/note-types/EditorCampos'
+import { EditorNota } from '../features/notes/EditorNota'
+import { Mazo } from '../features/notes/Mazo'
 import { PruebaAudio } from '../features/podcast/PruebaAudio'
 import { AvisoActualizacion } from './AvisoActualizacion'
 import { useConexion } from './useConexion'
@@ -14,10 +19,12 @@ function Inicio() {
 
   return (
     <main>
-      <section className="tarjeta">
-        <h2>Farmacología 1</h2>
-        <p>Aquí van a aparecer tus mazos, el repaso del día y el modo escuchar.</p>
-      </section>
+      <Materias />
+
+      <a className="tarjeta enlace" href="#/tipo/tipo-farmaco">
+        <h2>Campos de la ficha de fármaco</h2>
+        <p>Agrega, renombra u oculta los datos que lleva cada fármaco.</p>
+      </a>
 
       <a className="tarjeta enlace" href="#/prueba-audio">
         <h2>Prueba de audio</h2>
@@ -57,7 +64,21 @@ function App() {
         </span>
       </header>
 
-      {ruta === '/prueba-audio' ? <PruebaAudio /> : <Inicio />}
+      {ruta === '/prueba-audio' ? (
+        <PruebaAudio />
+      ) : ruta.startsWith('/tipo/') ? (
+        <EditorCampos id={ruta.slice('/tipo/'.length)} />
+      ) : ruta.startsWith('/mazo/') ? (
+        <Mazo id={ruta.slice('/mazo/'.length)} />
+      ) : ruta.startsWith('/nota/nueva/') ? (
+        <EditorNota mazoId={ruta.slice('/nota/nueva/'.length)} />
+      ) : ruta.startsWith('/nota/') ? (
+        <EditorNota notaId={ruta.slice('/nota/'.length)} />
+      ) : ruta.startsWith('/materia/') ? (
+        <Materia id={ruta.slice('/materia/'.length)} />
+      ) : (
+        <Inicio />
+      )}
 
       <footer className="pie">Versión {__APP_VERSION__}</footer>
       <AvisoActualizacion />
