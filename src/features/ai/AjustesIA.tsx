@@ -159,7 +159,7 @@ export function AjustesIA() {
       <section className="tarjeta">
         <h2>Inteligencia artificial</h2>
         <p>
-          La IA lee tus fotos, PDF y notas de voz y llena los campos de cada fármaco para que tú los revises. Se usa el
+          La IA lee tus fotos, PDF y notas de voz y llena los campos de cada fármaco, patología o caso para que tú los revises. Se usa el
           primer proveedor de la lista; si se le acaba la cuota gratis, pasa al siguiente.
         </p>
         <p className="ayuda">

@@ -190,7 +190,7 @@ Primero se arma la estructura de las tres materias. La prueba con material real 
   - Enlaces tipados (`enlaces.ts`, `REGLAS`): Trata/Se trata con, Contraindicado en/No usar, Interactúa con, Incluye/Aparece en el caso. Se sugieren cuando un campo nombra a otra nota, y Desi los confirma. También hay "+ Enlazar con otra nota" en cada ficha. Entre ejemplos, los enlaces vienen ya confirmados.
   - El fármaco suma "Vía de administración" y "Farmacocinética (ADME)" (pedido de Manuel). `completarCamposDeFabrica` agrega los campos de fábrica nuevos a las instalaciones existentes, en su lugar y sin tocar lo de Desi.
   - La farmacocinética de amoxicilina y enalapril quedó "Por validar con la sección 5.2 de la ficha técnica", porque esa sección no se pudo leer entera.
-- **Paso D:** al cargar con IA (foto, PDF o voz), la IA detecta si cada cosa es un fármaco, una patología o un caso, y llena los campos del tipo que corresponde.
+- **Paso D (v0.21.0):** al cargar con IA (foto, PDF o voz), la IA recibe todos los tipos de ficha con sus campos y el tipo principal de la materia. Responde `{"notas":[{"tipo":…}]}`, y cada nota se revisa y se guarda como su tipo. Las cargas viejas sin `tipoNotaId` son fármacos. `borrador.farmacos` conserva ese nombre por compatibilidad.
 - **Al terminar:** recordarle a Manuel y darle el mensaje de WhatsApp para Desi, listo para reenviar: instalar en Android, entrar con su Gmail marcando el permiso de Drive y sacar su propia clave de Gemini.
 
 ### Hoja de ruta por etapas

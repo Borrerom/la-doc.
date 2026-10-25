@@ -70,7 +70,7 @@ try {
   await p.getByRole('button', { name: '📄 PDF' }).click()
   await p.getByLabel('Elegir PDF').setInputFiles({ name: 'guia.pdf', mimeType: 'application/pdf', buffer: PDF })
   await p.getByRole('button', { name: 'Guardar en la cola' }).click()
-  await p.getByRole('link', { name: 'Revisar 1 fármacos' }).waitFor({ timeout: 20000 })
+  await p.getByRole('link', { name: 'Revisar 1 pendiente' }).waitFor({ timeout: 20000 })
   if (!textosEnviados[0]?.includes('AMPICILINA. Grupo: penicilinas')) throw new Error(`texto del PDF: ${textosEnviados[0]}`)
 
   await p.goBack()
@@ -80,7 +80,7 @@ try {
   await p.getByRole('button', { name: '■ Terminar' }).click()
   await p.getByLabel('Nota de voz grabada').waitFor()
   await p.getByRole('button', { name: 'Guardar en la cola' }).click()
-  await p.getByRole('link', { name: 'Revisar 1 fármacos' }).nth(1).waitFor({ timeout: 20000 })
+  await p.getByRole('link', { name: 'Revisar 1 pendiente' }).nth(1).waitFor({ timeout: 20000 })
   if (transcripciones !== 1 || !textosEnviados[1]?.includes('La gentamicina es un aminoglucósido')) {
     throw new Error(`voz: ${transcripciones} ${textosEnviados[1]}`)
   }

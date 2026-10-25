@@ -1,7 +1,7 @@
 import { archivosDeCarga } from '../db/cargas'
 import { db } from '../db/db'
 import { rutaDeMazo } from '../db/organizacion'
-import { TIPO_FARMACO } from '../db/tiposNota'
+import { listarTiposNota, TIPO_FARMACO } from '../db/tiposNota'
 import type { Carga, Id, ProveedorIA } from '../model/tipos'
 import { ErrorIA, transcribirConGroq, type ParteIA } from './clientes'
 import { armarInstrucciones, interpretarRespuesta, type Borrador } from './extraer'
@@ -93,8 +93,10 @@ export type Resultado = 'listo' | 'sin_red' | 'sin_proveedor' | 'error'
 export async function procesarCarga(id: Id, herramientas: Herramientas = {}): Promise<Resultado> {
   const carga = await db.cargas.get(id)
   if (!carga || carga.borrada || carga.estado !== 'en_cola') return 'error'
-  const tipo = await db.tiposNota.get(TIPO_FARMACO)
-  if (!tipo) return 'error'
+  const tipos = await listarTiposNota()
+  if (tipos.length === 0) return 'error'
+  const materia = await db.materias.get(carga.materiaId)
+  const principal = tipos.find((t) => t.id === (materia?.tipoPrincipal ?? TIPO_FARMACO))
 
   const disponibles = await proveedoresDisponibles()
   const groq = disponibles.find((p) => p.id === 'groq')
@@ -114,7 +116,7 @@ export async function procesarCarga(id: Id, herramientas: Herramientas = {}): Pr
   await db.cargas.update(id, { estado: 'procesando', error: undefined })
   const errores: string[] = []
   try {
-    const instrucciones = armarInstrucciones(tipo, { ...(await contexto(carga)), tipoCarga: carga.tipo })
+    const instrucciones = armarInstrucciones(tipos, { ...(await contexto(carga)), tipoCarga: carga.tipo, principal })
     let nativas: Promise<ParteIA[]> | undefined
     let convertidas: Promise<ParteIA[]> | undefined
     for (const p of proveedores) {
@@ -123,9 +125,9 @@ export async function procesarCarga(id: Id, herramientas: Herramientas = {}): Pr
           ? (nativas ??= partesNativas(carga, herramientas))
           : (convertidas ??= partesConvertidas(carga, herramientas, groq)))
         const { texto, modelo } = await pedirConRespaldoDeModelo(p, { instrucciones, partes, json: true }, herramientas.hacerFetch, herramientas.esperar)
-        const farmacos = interpretarRespuesta(texto, tipo)
+        const farmacos = interpretarRespuesta(texto, tipos)
         if (farmacos.length === 0) {
-          errores.push(`${PROVEEDORES[p.id].nombre}: no encontró fármacos en este material.`)
+          errores.push(`${PROVEEDORES[p.id].nombre}: no encontró fármacos, patologías ni casos en este material.`)
           continue
         }
         const borrador: Borrador = { farmacos, proveedor: PROVEEDORES[p.id].nombre, modelo, fecha: Date.now() }
