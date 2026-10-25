@@ -10,6 +10,7 @@ import {
 import { useConexion } from '../../app/useConexion'
 import { asegurarPermiso, precargarGoogle } from '../../core/respaldo/google'
 import { haceCuanto } from './haceCuanto'
+import { ConEnlaces } from '../../ui/ConEnlaces'
 
 // Tarjeta del Inicio: dice cuándo fue el último respaldo y deja respaldar con un toque.
 export function TarjetaRespaldo() {
@@ -37,7 +38,11 @@ export function TarjetaRespaldo() {
       <p>
         Último respaldo: <strong>{haceCuanto(estado.ultimo)}</strong>
       </p>
-      {estado.error && <p className="texto-error">{estado.error}</p>}
+      {estado.error && (
+        <p className="texto-error">
+          <ConEnlaces texto={estado.error} />
+        </p>
+      )}
       {enLinea && (
         <button
           type="button"
@@ -142,7 +147,11 @@ export function Respaldo() {
               Último respaldo: <strong>{haceCuanto(estado.ultimo)}</strong>
             </li>
           </ul>
-          {estado.error && <p className="texto-error">{estado.error}</p>}
+          {estado.error && (
+        <p className="texto-error">
+          <ConEnlaces texto={estado.error} />
+        </p>
+      )}
           <div className="fila">
             <button
               type="button"
@@ -182,7 +191,9 @@ export function Respaldo() {
       )}
       {error && (
         <section className="tarjeta error" role="alert">
-          <p>{error}</p>
+          <p>
+            <ConEnlaces texto={error} />
+          </p>
         </section>
       )}
 

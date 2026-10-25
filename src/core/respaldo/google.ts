@@ -6,7 +6,7 @@ const CLAVE_TOKEN = 'la-doc:google-token'
 
 export type Token = { valor: string; vence: number }
 
-type RespuestaToken = { access_token?: string; expires_in?: number; error?: string; error_description?: string }
+type RespuestaToken = { access_token?: string; expires_in?: number; scope?: string; error?: string; error_description?: string }
 type ClienteToken = { requestAccessToken: (o?: { prompt?: string; login_hint?: string }) => void }
 type GoogleGis = {
   accounts: {
@@ -83,6 +83,10 @@ function solicitar(google: GoogleGis, { silencioso = false, correo }: { silencio
       scope: PERMISOS,
       callback: (r) => {
         if (!r.access_token) return mal(new Error(r.error_description ?? r.error ?? 'Google no dio permiso.'))
+        // Google deja desmarcar permisos: sin el de Drive no hay respaldo.
+        if (r.scope && !r.scope.includes('drive.file')) {
+          return mal(new Error('Falta el permiso de Google Drive. Toca de nuevo "Entrar con Google" y marca la casilla de Google Drive.'))
+        }
         const t = { valor: r.access_token, vence: Date.now() + (r.expires_in ?? 3600) * 1000 }
         guardarToken(t)
         ok(t)

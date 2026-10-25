@@ -122,3 +122,17 @@ describe('respaldo en Google Drive', () => {
     expect((await leerEstadoRespaldo()).error).toMatch(/Respaldar ahora/)
   })
 })
+
+describe('errores de Drive explicados', () => {
+  it('dice qué hacer si la API de Drive no está activada o falta el permiso', async () => {
+    const { asegurarCarpeta } = await import('../../src/core/respaldo/drive')
+    const responder = (cuerpo: unknown) => (async () => new Response(JSON.stringify(cuerpo), { status: 403 })) as unknown as typeof fetch
+    const token = { valor: 'tok', vence: Date.now() + 3600_000 }
+    await expect(
+      asegurarCarpeta(responder({ error: { status: 'PERMISSION_DENIED', errors: [{ reason: 'accessNotConfigured' }] } }), token),
+    ).rejects.toThrow(/no está activada.*drive\.googleapis\.com/)
+    await expect(
+      asegurarCarpeta(responder({ error: { status: 'PERMISSION_DENIED', details: [{ reason: 'ACCESS_TOKEN_SCOPE_INSUFFICIENT' }] } }), token),
+    ).rejects.toThrow(/marca la casilla de Google Drive/)
+  })
+})
