@@ -5,6 +5,7 @@ import { Materias } from '../features/decks/Materias'
 import { EditorCampos } from '../features/note-types/EditorCampos'
 import { EditorNota } from '../features/notes/EditorNota'
 import { Mazo } from '../features/notes/Mazo'
+import { Escuchar } from '../features/podcast/Escuchar'
 import { PruebaAudio } from '../features/podcast/PruebaAudio'
 import { Buscar } from '../features/search/Buscar'
 import { Repaso } from '../features/review/Repaso'
@@ -24,6 +25,11 @@ function Inicio() {
     <main>
       <ResumenRepaso />
       <Materias />
+
+      <a className="tarjeta enlace" href="#/escuchar">
+        <h2>🎧 Modo escuchar</h2>
+        <p>Tus fichas en audio, como un podcast, incluso con la pantalla apagada.</p>
+      </a>
 
       <a className="tarjeta enlace" href="#/tipo/tipo-farmaco">
         <h2>Campos de la ficha de fármaco</h2>
@@ -73,7 +79,9 @@ function App() {
         </span>
       </header>
 
-      {ruta === '/buscar' ? (
+      {ruta === '/escuchar' ? (
+        <Escuchar />
+      ) : ruta === '/buscar' ? (
         <Buscar />
       ) : ruta === '/repaso' ? (
         <Repaso />

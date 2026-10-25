@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { callar, hablar, textoParaLeer } from '../../core/audio/vozTelefono'
+import { guardarAjustesAudio, useAjustesAudio } from '../../core/db/ajustes'
 import { db } from '../../core/db/db'
 import { verFicha, type FichaVista } from '../../core/db/fichas'
 import type { Calificacion } from '../../core/model/tipos'
@@ -20,6 +22,18 @@ export function Repaso() {
   const [respuestaVisible, setRespuestaVisible] = useState(false)
   const [hechasHoy, setHechasHoy] = useState(0)
   const guardando = useRef(false)
+  const ajustes = useAjustesAudio()
+  const leer = ajustes.leerEnRepaso
+
+  // Lectura en voz alta: la pregunta al aparecer y la respuesta al mostrarla.
+  useEffect(() => {
+    if (!leer || !actual) return
+    callar()
+    const texto = respuestaVisible ? actual.vista.reverso : actual.vista.frente
+    hablar(textoParaLeer(texto), ajustes.velocidad).catch(() => {})
+  }, [leer, actual, respuestaVisible, ajustes.velocidad])
+
+  useEffect(() => () => callar(), [])
 
   const cargar = useCallback(async () => {
     const ahora = Date.now()
@@ -81,7 +95,19 @@ export function Repaso() {
         <a href="#/" className="volver">
           ← Salir
         </a>
-        <span>
+        <span className="barra-derecha">
+          <button
+            type="button"
+            className={leer ? 'icono activo' : 'icono'}
+            aria-pressed={leer}
+            aria-label="Leer en voz alta"
+            onClick={() => {
+              if (leer) callar()
+              void guardarAjustesAudio({ leerEnRepaso: !leer })
+            }}
+          >
+            {leer ? '🔊' : '🔈'}
+          </button>
           {actual.item.nueva && <span className="etiqueta-nueva">Nueva</span>} Quedan {pendientes}
         </span>
       </div>

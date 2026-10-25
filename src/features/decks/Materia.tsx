@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
 import { db } from '../../core/db/db'
+import { borrarEjemplos, cargarEjemplos, hayEjemplos } from '../../core/db/ejemplos'
 import { arbolDeMazos, borrarMazo, crearMazo, listarMazos, renombrar, type NodoMazo } from '../../core/db/organizacion'
 import type { Id } from '../../core/model/tipos'
 import { FormularioNombre } from '../../ui/FormularioNombre'
@@ -10,6 +11,7 @@ type Accion = { tipo: 'submazo' | 'renombrar'; id: Id } | null
 export function Materia({ id }: { id: Id }) {
   const materia = useLiveQuery(() => db.materias.get(id), [id])
   const mazos = useLiveQuery(() => listarMazos(id), [id])
+  const conEjemplos = useLiveQuery(() => hayEjemplos(id), [id])
   const [accion, setAccion] = useState<Accion>(null)
 
   if (materia === undefined || mazos === undefined) return null
@@ -114,6 +116,34 @@ export function Materia({ id }: { id: Id }) {
           ))}
         </ul>
         <FormularioNombre etiqueta="Nuevo mazo (tema)" boton="Agregar" alGuardar={(n) => crearMazo(n, id)} />
+      </section>
+
+      <section className="tarjeta">
+        <h2>Fármacos de ejemplo</h2>
+        {conEjemplos ? (
+          <>
+            <p>Están en el mazo "Ejemplos (MedlinePlus)". Cuando ya no los necesites, bórralos de una vez.</p>
+            <button
+              type="button"
+              className="secundario peligro"
+              onClick={() => {
+                if (confirm('¿Borrar los 3 fármacos de ejemplo y sus fichas?')) void borrarEjemplos(id)
+              }}
+            >
+              Borrar ejemplos
+            </button>
+          </>
+        ) : (
+          <>
+            <p>
+              Amoxicilina, enalapril y metformina, con cada dato tomado de MedlinePlus en español, para probar las fichas y
+              el repaso.
+            </p>
+            <button type="button" className="secundario" onClick={() => cargarEjemplos(id)}>
+              Cargar 3 ejemplos
+            </button>
+          </>
+        )}
       </section>
     </main>
   )
