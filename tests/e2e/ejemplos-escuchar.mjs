@@ -38,6 +38,13 @@ try {
   await p.getByRole('link', { name: /ficha técnica \(CIMA, AEMPS\)/ }).first().waitFor()
   await p.screenshot({ path: 'tests/e2e/ejemplos.png', fullPage: true })
 
+  // Botón para escuchar la ficha completa, y el mazo entero en modo escuchar.
+  await p.getByRole('button', { name: '🔊 Escuchar' }).click()
+  await p.getByRole('button', { name: '■ Detener' }).waitFor()
+  await p.getByRole('button', { name: '🔊 Escuchar' }).waitFor({ timeout: 15000 })
+  await p.getByRole('link', { name: '🎧 Escuchar el mazo' }).click()
+  await p.waitForFunction(() => document.querySelector('select')?.selectedOptions[0]?.textContent?.includes('Ejemplos'))
+
   // El buscador los encuentra, también sin acentos.
   await p.goto(`http://localhost:${PUERTO}/#/buscar`)
   for (const nombre of ['amoxicilina', 'enalapril', 'metformina']) {

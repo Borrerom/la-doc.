@@ -792,3 +792,18 @@ audio {
   border-radius: 8px;
   padding: 8px 12px;
 }
+
+.boton-leer {
+  background: var(--acento-suave);
+  color: var(--acento);
+}
+
+.destacada {
+  border-color: var(--acento);
+  background: var(--acento-suave);
+}
+
+.ficha .fila {
+  align-items: center;
+  margin-top: 8px;
+}

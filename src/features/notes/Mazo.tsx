@@ -5,6 +5,8 @@ import { notasDeMazo, tituloNota } from '../../core/db/notas'
 import { listarMazos, rutaDeMazo } from '../../core/db/organizacion'
 import { TIPO_FARMACO, camposOrdenados } from '../../core/db/tiposNota'
 import type { Id, Nota, TipoNota } from '../../core/model/tipos'
+import { BotonLeer } from '../podcast/BotonLeer'
+import { frasesDeNota } from '../podcast/frases'
 import { Fuentes } from './Fuentes'
 import { TablaNotas } from './TablaNotas'
 
@@ -75,6 +77,11 @@ export function Mazo({ id }: { id: Id }) {
           <a className="boton" href={`#/nota/nueva/${id}`}>
             + Nuevo fármaco
           </a>
+          {notas.length > 0 && (
+            <a className="boton-secundario" href={`#/escuchar/${id}`}>
+              🎧 Escuchar el mazo
+            </a>
+          )}
           <a className="boton-secundario" href={`#/capturar/${id}`}>
             📷 Cargar con IA
           </a>
@@ -136,7 +143,10 @@ function FichaNota({ nota, tipo, mazo }: { nota: Nota; tipo: TipoNota; mazo?: st
         </p>
       )}
       <Fuentes notaId={nota.id} />
-      <a href={`#/nota/${nota.id}`}>Editar</a>
+      <div className="fila">
+        <BotonLeer frases={frasesDeNota(nota, tipo)} />
+        <a href={`#/nota/${nota.id}`}>Editar</a>
+      </div>
     </details>
   )
 }
