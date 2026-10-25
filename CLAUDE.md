@@ -252,3 +252,9 @@ Una app en el teléfono de su hija, que funcione sin internet, donde ella cargue
   - El proyecto de Google está en modo de prueba: solo entran los usuarios de prueba agregados, y Google muestra "Google no verificó esta app" (hay que tocar Continuar).
 - **Colores para estudiar de día y de noche** (pedido de Manuel, 2026-10-25, eligió la Opción 2): selector en Más opciones → "🌙 Colores de la pantalla" con Modo Desi (automático: sigue al teléfono), Día (lila claro), Noche (gris violeta oscuro, nunca negro puro, letra blanco roto) y Estudiando con todo en la noche (`noche-calida`: letra crema y acento ámbar, sin azules). Nombres elegidos por Manuel; la estudiante se llama Desiree y en la app se le dice Desi. Los colores salen solo de las variables de `src/index.css`; un color nuevo debe definirse para los cuatro modos y cumplir contraste 4,5:1.
 
+
+## Manual de uso (v0.22.0)
+- `public/manual.html` es una página aparte, precargada por Workbox, que se abre sin internet desde Inicio › ⚙ Más opciones › 📖 Manual de uso. Toma el tema guardado (`la-doc:tema`).
+- Cita los textos y mensajes de error reales de la app. **Si cambias un botón, una pantalla o un mensaje de error, actualiza también el manual** (y su número de versión al pie).
+- Los bloques entre `<!-- APP-INICIO -->` y `<!-- APP-FIN -->` solo sirven dentro de la app; se quitan para publicar la copia que se comparte por WhatsApp como Artifact.
+- Prueba e2e: `tests/e2e/manual.mjs`.
