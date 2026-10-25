@@ -155,7 +155,7 @@ export const SIN_EJEMPLOS = 'la-doc:sin-ejemplos'
 let enCurso: Promise<void> | null = null
 
 // La primera vez que hay un semestre, deja Farmacología 1 con los 3 ejemplos ya cargados.
-// Se hace una sola vez: si Kiko los borra, no vuelven.
+// Se hace una sola vez: si Desi los borra, no vuelven.
 export function asegurarEjemplosIniciales(): Promise<void> {
   enCurso ??= (async () => {
     try {

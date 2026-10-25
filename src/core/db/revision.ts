@@ -47,7 +47,7 @@ export async function aprobarFarmaco(cargaId: Id, indice: number, valores: Recor
   await db.notas.update(nota.id, { cargaId })
   const fuenteId = await fuenteDeCarga(carga, borrador)
   const ahora = Date.now()
-  // Solo se cita el material en los datos que trajo la IA; lo que Kiko escribe a mano no lleva esa fuente.
+  // Solo se cita el material en los datos que trajo la IA; lo que Desi escribe a mano no lleva esa fuente.
   await db.citas.bulkAdd(
     Object.keys(nota.valores).filter((campoId) => propuesto.valores[campoId]).map((campoId) => ({
       id: ulid(),

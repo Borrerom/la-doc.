@@ -1,12 +1,12 @@
-// Colores de la pantalla. "auto" sigue el modo claro u oscuro del teléfono; los demás lo fijan.
+// Colores de la pantalla. "auto" (Modo Desi) sigue el modo claro u oscuro del teléfono; los demás lo fijan.
 // Se guarda en este teléfono y se aplica con data-tema en <html>, antes de pintar la app.
 export type Tema = 'auto' | 'dia' | 'noche' | 'noche-calida'
 
 export const TEMAS: { id: Tema; nombre: string; detalle: string }[] = [
-  { id: 'auto', nombre: 'Automático', detalle: 'Claro u oscuro según el teléfono' },
+  { id: 'auto', nombre: 'Modo Desi', detalle: 'Claro u oscuro según el teléfono' },
   { id: 'dia', nombre: 'Día', detalle: 'Fondo lila muy claro' },
   { id: 'noche', nombre: 'Noche', detalle: 'Gris violeta oscuro, letra blanco roto' },
-  { id: 'noche-calida', nombre: 'Noche cálida', detalle: 'Letra crema y ámbar, con menos luz azul' },
+  { id: 'noche-calida', nombre: 'Estudiando con todo en la noche', detalle: 'Letra crema y ámbar, con menos luz azul' },
 ]
 
 const CLAVE = 'la-doc:tema'

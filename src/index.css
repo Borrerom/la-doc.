@@ -18,7 +18,7 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* Noche: sigue al teléfono en "Automático" o se fija con el selector de colores. Gris violeta, no negro puro. */
+/* Noche: sigue al teléfono en "Modo Desi" o se fija con el selector de colores. Gris violeta, no negro puro. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-tema]) {
     --fondo: #15121a;
@@ -52,7 +52,7 @@
   color-scheme: light;
 }
 
-/* Noche cálida: sin tonos azules, letra crema y acento ámbar, para estudiar tarde. */
+/* Estudiando con todo en la noche (noche-calida): sin tonos azules, letra crema y acento ámbar, para estudiar tarde. */
 :root[data-tema='noche-calida'] {
   --fondo: #17130f;
   --superficie: #211b15;
