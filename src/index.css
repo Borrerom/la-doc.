@@ -497,3 +497,97 @@ main {
   white-space: pre-line;
   margin-top: 2px;
 }
+
+.repaso-resumen {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-color: var(--acento);
+}
+
+.repaso-barra {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+}
+
+.etiqueta-nueva {
+  background: var(--acento-suave);
+  color: var(--acento);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+}
+
+.repaso-ficha {
+  min-height: 40vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.tarjeta .repaso-frente {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--texto);
+  white-space: pre-line;
+}
+
+.tarjeta .repaso-reverso {
+  font-size: 1.1rem;
+  color: var(--texto);
+  white-space: pre-line;
+}
+
+.repaso-ficha hr {
+  border: 0;
+  border-top: 1px solid var(--borde);
+  width: 100%;
+}
+
+.mostrar-respuesta {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.05rem;
+}
+
+.botones-calificar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.botones-calificar button {
+  display: grid;
+  gap: 2px;
+  padding: 12px 4px;
+}
+
+.botones-calificar small {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+.botones-calificar .mal {
+  background: #b91c1c;
+}
+
+.botones-calificar .dificil {
+  background: #b45309;
+}
+
+.botones-calificar .bien {
+  background: #15803d;
+}
+
+.botones-calificar .facil {
+  background: #1d4ed8;
+}
+
+.repaso-fin {
+  text-align: center;
+}
