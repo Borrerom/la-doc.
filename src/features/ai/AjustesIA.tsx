@@ -136,6 +136,8 @@ function TarjetaProveedor({ p, posicion, total }: { p: ProveedorIA; posicion: nu
         <p className={p.prueba.ok ? 'prueba-ok' : 'texto-error'} role="status">
           {p.prueba.ok ? '✓ ' : '✗ '}
           {p.prueba.mensaje}
+          {/* La versión ayuda a saber por la captura si el teléfono tenía la app vieja guardada. */}
+          {!p.prueba.ok && <small> (Versión {__APP_VERSION__})</small>}
         </p>
       )}
     </section>

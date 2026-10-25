@@ -141,6 +141,7 @@ Aplicación para la hija de Manuel, estudiante de medicina en Venezuela. El proy
 - Se usan niveles gratuitos de APIs para desarrolladores (las apps de chat gratis no se pueden conectar).
 - **Principal:** Gemini (Google), activado con su misma cuenta de Gmail.
 - **Modelo de Gemini:** por defecto se usa el alias `gemini-flash-latest`, que Google mueve solo al Flash más nuevo. Si un modelo responde "no existe" (404), la app prueba los de respaldo (`MODELOS_RESPALDO_GEMINI`) y guarda el que funcione. El modelo se puede cambiar a mano en Ajustes de IA.
+- **Versiones viejas en iPhone:** la PWA de iOS vuelve del fondo sin recargarse y puede quedarse con una versión vieja (pasó el 2026-10-25: un 503 en el iPhone que en la computadora no salía). La app busca versión nueva al volver a primer plano y cada hora, y los errores de "Probar" muestran la versión. Ante un error raro solo en el teléfono, lo primero es mirar la versión al pie de Inicio.
 - **Respaldo:** Groq u OpenRouter, con modelos gratuitos.
 - Ella elige el proveedor; si se agota la cuota gratis de uno, la app cambia sola al siguiente.
 - El contenido es solo material de estudio (ella aún no ve pacientes), así que el uso de datos del nivel gratuito no es un problema.
