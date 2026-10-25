@@ -138,6 +138,7 @@ export type ProveedorIA = {
   orden: number
   activo: boolean
   agotadoHasta?: number
+  prueba?: { fecha: number; ok: boolean; mensaje: string }
 }
 
 export type Ajuste = { clave: string; valor: unknown }

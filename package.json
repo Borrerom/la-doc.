@@ -11,7 +11,7 @@
     "test": "vitest run",
     "test:offline": "node tests/e2e/offline.mjs",
     "icons": "node scripts/make-icons.mjs",
-    "test:e2e": "node tests/e2e/offline.mjs && node tests/e2e/mazos.mjs && node tests/e2e/campos.mjs && node tests/e2e/notas.mjs && node tests/e2e/repaso.mjs && node tests/e2e/ejemplos-escuchar.mjs"
+    "test:e2e": "node tests/e2e/offline.mjs && node tests/e2e/mazos.mjs && node tests/e2e/campos.mjs && node tests/e2e/notas.mjs && node tests/e2e/repaso.mjs && node tests/e2e/ejemplos-escuchar.mjs && node tests/e2e/ajustes-ia.mjs"
   },
   "dependencies": {
     "@mintplex-labs/piper-tts-web": "^1.0.5",

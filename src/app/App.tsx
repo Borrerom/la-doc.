@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { pedirAlmacenamientoPersistente, type EstadoAlmacenamiento } from '../core/storage/persist'
+import { AjustesIA } from '../features/ai/AjustesIA'
 import { Materia } from '../features/decks/Materia'
 import { Materias } from '../features/decks/Materias'
 import { EditorCampos } from '../features/note-types/EditorCampos'
@@ -29,6 +30,11 @@ function Inicio() {
       <a className="tarjeta enlace" href="#/escuchar">
         <h2>🎧 Modo escuchar</h2>
         <p>Tus fichas en audio, como un podcast, incluso con la pantalla apagada.</p>
+      </a>
+
+      <a className="tarjeta enlace" href="#/ajustes-ia">
+        <h2>🤖 Inteligencia artificial</h2>
+        <p>Claves gratis de Gemini, Groq y OpenRouter para llenar fichas desde fotos, PDF y voz.</p>
       </a>
 
       <a className="tarjeta enlace" href="#/tipo/tipo-farmaco">
@@ -79,7 +85,9 @@ function App() {
         </span>
       </header>
 
-      {ruta === '/escuchar' ? (
+      {ruta === '/ajustes-ia' ? (
+        <AjustesIA />
+      ) : ruta === '/escuchar' ? (
         <Escuchar />
       ) : ruta === '/buscar' ? (
         <Buscar />

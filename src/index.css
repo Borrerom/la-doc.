@@ -682,3 +682,21 @@ button.icono.activo {
   flex: 1;
   padding: 14px;
 }
+
+.interruptor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.proveedor ol {
+  padding-left: 20px;
+  margin: 8px 0;
+}
+
+.prueba-ok {
+  color: var(--acento);
+  font-weight: 600;
+  margin: 8px 0 0;
+}
