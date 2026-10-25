@@ -78,7 +78,8 @@ export function useProveedores() {
 
 export async function guardarProveedor(id: IdProveedor, cambios: Partial<Omit<ProveedorIA, 'id' | 'orden'>>) {
   const limpio = { ...cambios }
-  if (limpio.clave !== undefined) limpio.clave = limpio.clave.trim()
+  // Una clave nunca lleva espacios: al pegar en el iPhone a veces se cuelan saltos de línea o caracteres invisibles.
+  if (limpio.clave !== undefined) limpio.clave = limpio.clave.replace(/[\s\u200B-\u200D\uFEFF]/g, '')
   if (limpio.modelo !== undefined) limpio.modelo = limpio.modelo.trim() || PROVEEDORES[id].modeloPorDefecto
   // Una clave o un modelo nuevos merecen otra oportunidad aunque el anterior se haya agotado.
   if (limpio.clave !== undefined || limpio.modelo !== undefined) {
@@ -106,26 +107,50 @@ export async function proveedoresDisponibles(ahora = Date.now()): Promise<Provee
   )
 }
 
-// Pide a la IA y, si el modelo de Gemini ya no existe, prueba los de respaldo y se queda con el que responda.
-export async function pedirConRespaldoDeModelo(proveedor: ProveedorIA, pedido: PedidoIA, hacerFetch: typeof fetch = fetch) {
+// Esperas antes de reintentar cuando el servicio está saturado (503).
+export const ESPERAS_SATURADO_MS = [1500, 4000]
+const dormir = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+// Reintenta el mismo modelo un par de veces si el servicio está saturado.
+async function pedirConReintentos(proveedor: ProveedorIA, pedido: PedidoIA, hacerFetch: typeof fetch, esperar: (ms: number) => Promise<unknown>) {
+  for (let intento = 0; ; intento++) {
+    try {
+      return await pedirIA(proveedor, pedido, hacerFetch)
+    } catch (e) {
+      if (!(e instanceof ErrorIA) || e.tipo !== 'saturado' || intento >= ESPERAS_SATURADO_MS.length) throw e
+      await esperar(ESPERAS_SATURADO_MS[intento])
+    }
+  }
+}
+
+// Pide a la IA. Si Gemini dice que el modelo ya no existe o sigue saturado tras reintentar, prueba
+// los modelos de respaldo. Solo se guarda el modelo nuevo cuando el anterior ya no existe.
+export async function pedirConRespaldoDeModelo(
+  proveedor: ProveedorIA,
+  pedido: PedidoIA,
+  hacerFetch: typeof fetch = fetch,
+  esperar: (ms: number) => Promise<unknown> = dormir,
+) {
+  const cambiable = (e: unknown) => e instanceof ErrorIA && (e.tipo === 'modelo' || e.tipo === 'saturado')
   try {
-    return { texto: await pedirIA(proveedor, pedido, hacerFetch), modelo: proveedor.modelo }
+    return { texto: await pedirConReintentos(proveedor, pedido, hacerFetch, esperar), modelo: proveedor.modelo }
   } catch (e) {
-    if (!(e instanceof ErrorIA) || e.tipo !== 'modelo' || proveedor.id !== 'gemini') throw e
+    if (!cambiable(e) || proveedor.id !== 'gemini') throw e
+    const retirado = (e as ErrorIA).tipo === 'modelo'
     for (const modelo of MODELOS_RESPALDO_GEMINI.filter((m) => m !== proveedor.modelo)) {
       try {
         const texto = await pedirIA({ ...proveedor, modelo }, pedido, hacerFetch)
-        await db.proveedoresIA.update(proveedor.id, { modelo })
+        if (retirado) await db.proveedoresIA.update(proveedor.id, { modelo })
         return { texto, modelo }
       } catch (otro) {
-        if (!(otro instanceof ErrorIA) || otro.tipo !== 'modelo') throw otro
+        if (!cambiable(otro)) throw otro
       }
     }
     throw e
   }
 }
 
-export async function probarProveedor(id: IdProveedor, hacerFetch: typeof fetch = fetch) {
+export async function probarProveedor(id: IdProveedor, hacerFetch: typeof fetch = fetch, esperar?: (ms: number) => Promise<unknown>) {
   const proveedor = await db.proveedoresIA.get(id)
   if (!proveedor) return
   let prueba: NonNullable<ProveedorIA['prueba']>
@@ -134,8 +159,15 @@ export async function probarProveedor(id: IdProveedor, hacerFetch: typeof fetch 
       proveedor,
       { instrucciones: 'Eres una prueba de conexión.', partes: [{ texto: 'Responde solo con la palabra: listo' }] },
       hacerFetch,
+      esperar,
     )
-    const cambio = modelo !== proveedor.modelo ? ` El modelo "${proveedor.modelo}" ya no existe; ahora usa "${modelo}".` : ''
+    const guardado = (await db.proveedoresIA.get(id))?.modelo
+    const cambio =
+      modelo === proveedor.modelo
+        ? ''
+        : guardado === modelo
+          ? ` El modelo "${proveedor.modelo}" ya no existe; ahora usa "${modelo}".`
+          : ` "${proveedor.modelo}" estaba saturado; respondió "${modelo}".`
     prueba = { fecha: Date.now(), ok: true, mensaje: `Funciona. Respondió: "${texto.trim().slice(0, 40)}".${cambio}` }
   } catch (e) {
     prueba = { fecha: Date.now(), ok: false, mensaje: e instanceof ErrorIA ? e.message : String(e) }

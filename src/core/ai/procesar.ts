@@ -16,6 +16,8 @@ export type Herramientas = {
   convertirAudio?: (blob: Blob) => Promise<Blob>
   // Pasa un PDF a texto o a imágenes para los proveedores que no leen PDF.
   convertirPdf?: (blob: Blob) => Promise<ParteIA[]>
+  // Espera entre reintentos cuando el servicio está saturado (en las pruebas no se espera).
+  esperar?: (ms: number) => Promise<unknown>
 }
 
 // Gemini lee fotos, PDF y audio tal cual. Los demás leen fotos; el PDF les llega convertido
@@ -120,7 +122,7 @@ export async function procesarCarga(id: Id, herramientas: Herramientas = {}): Pr
         const partes = await (p.id === 'gemini'
           ? (nativas ??= partesNativas(carga, herramientas))
           : (convertidas ??= partesConvertidas(carga, herramientas, groq)))
-        const { texto, modelo } = await pedirConRespaldoDeModelo(p, { instrucciones, partes, json: true }, herramientas.hacerFetch)
+        const { texto, modelo } = await pedirConRespaldoDeModelo(p, { instrucciones, partes, json: true }, herramientas.hacerFetch, herramientas.esperar)
         const farmacos = interpretarRespuesta(texto, tipo)
         if (farmacos.length === 0) {
           errores.push(`${PROVEEDORES[p.id].nombre}: no encontró fármacos en este material.`)

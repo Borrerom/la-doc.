@@ -129,4 +129,40 @@ describe('proveedores guardados', () => {
     expect((await db.proveedoresIA.get('gemini'))?.modelo).toBe('gemini-flash-latest')
     expect((await probarProveedor('gemini', respuestaFalsa(404, 'not found').hacerFetch))?.mensaje).toMatch(/modelo/)
   })
+
+  it('si Google está saturado (503) reintenta, prueba otro modelo y lo explica sin culpar la clave', async () => {
+    await guardarProveedor('gemini', { clave: 'AIza1' })
+    const urls: string[] = []
+    const esperas: number[] = []
+    const esperar = async (ms: number) => {
+      esperas.push(ms)
+    }
+    const saturadoHasta = (n: number) =>
+      (async (url: string) => {
+        urls.push(url)
+        if (urls.length <= n) return new Response('{"error":{"status":"UNAVAILABLE"}}', { status: 503 })
+        return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: 'listo' }] } }] }), { status: 200 })
+      }) as unknown as typeof fetch
+    const p = (await db.proveedoresIA.get('gemini'))!
+
+    // Al segundo intento ya responde: mismo modelo.
+    expect(await pedirConRespaldoDeModelo(p, { instrucciones: '', partes: [] }, saturadoHasta(1), esperar)).toMatchObject({
+      modelo: 'gemini-flash-latest',
+    })
+    expect(esperas).toEqual([1500])
+
+    // Saturado los 3 intentos: responde otro modelo, pero no se cambia el guardado.
+    urls.length = 0
+    expect(await pedirConRespaldoDeModelo(p, { instrucciones: '', partes: [] }, saturadoHasta(3), esperar)).toMatchObject({
+      modelo: 'gemini-2.5-flash',
+    })
+    expect((await db.proveedoresIA.get('gemini'))?.modelo).toBe('gemini-flash-latest')
+
+    // Siempre saturado: el mensaje dice que no es la clave.
+    const prueba = await probarProveedor('gemini', respuestaFalsa(503, 'overloaded').hacerFetch, esperar)
+    expect(prueba).toMatchObject({ ok: false })
+    expect(prueba?.mensaje).toMatch(/Google está saturado.*No es tu clave.*Detalle: "overloaded"/)
+    await guardarProveedor('gemini', { clave: ' AIza\u200B12\n' })
+    expect((await db.proveedoresIA.get('gemini'))?.clave).toBe('AIza12')
+  })
 })
