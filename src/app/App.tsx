@@ -76,6 +76,11 @@ function Inicio() {
           <p>Comprueba qué voz sigue sonando con la pantalla apagada.</p>
         </a>
 
+        <a className="tarjeta enlace" href="manual.html">
+          <h2>📖 Manual de uso</h2>
+          <p>Cómo usar cada pantalla y qué hacer con cada mensaje de error. Se abre sin internet.</p>
+        </a>
+
         <AgregarSemestre />
 
         <section className="tarjeta">

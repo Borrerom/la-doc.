@@ -1,0 +1,676 @@
+<!-- APP-INICIO -->
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#7c3aed">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>
+  // Mismos colores que eligió en la app (Más opciones › Colores de la pantalla).
+  try {
+    var t = localStorage.getItem('la-doc:tema')
+    if (t && t !== 'auto') document.documentElement.dataset.tema = t
+  } catch (e) {}
+</script>
+<!-- APP-FIN -->
+<title>Manual de La Doc</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* Una sola columna de lectura, como una guía de bolsillo: índice arriba, secciones abajo, errores al final. */
+  :root {
+    --fondo: #faf8fc;
+    --superficie: #ffffff;
+    --texto: #2a2433;
+    --texto-suave: #675d74;
+    --borde: #e7e1ef;
+    --acento: #7c3aed;
+    --acento-suave: #ede9fe;
+    --sobre-acento: #ffffff;
+    --alerta: #b45309;
+    --alerta-suave: #fef3c7;
+    --error: #b42318;
+    --error-suave: #fdecea;
+    --letra: system-ui, Roboto, 'Segoe UI', sans-serif;
+    --letra-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]):not([data-tema]) {
+      --fondo: #15121a; --superficie: #1f1a26; --texto: #ece8f2; --texto-suave: #b0a7bd; --borde: #352d40;
+      --acento: #c4b5fd; --acento-suave: #3b2a5c; --sobre-acento: #1c1430; --alerta: #fbbf24; --alerta-suave: #451a03;
+      --error: #fca5a5; --error-suave: #3f1d1d; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"], :root[data-tema="noche"] {
+    --fondo: #15121a; --superficie: #1f1a26; --texto: #ece8f2; --texto-suave: #b0a7bd; --borde: #352d40;
+    --acento: #c4b5fd; --acento-suave: #3b2a5c; --sobre-acento: #1c1430; --alerta: #fbbf24; --alerta-suave: #451a03;
+    --error: #fca5a5; --error-suave: #3f1d1d; color-scheme: dark;
+  }
+  :root[data-tema="noche-calida"] {
+    --fondo: #17130f; --superficie: #211b15; --texto: #f1e4cc; --texto-suave: #c4b08f; --borde: #3a3026;
+    --acento: #f0b46a; --acento-suave: #3d2c17; --sobre-acento: #1f160b; --alerta: #fca5a5; --alerta-suave: #3f1d1d;
+    --error: #fca5a5; --error-suave: #3f1d1d; color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--texto);
+    font: 17px/1.55 var(--letra);
+    -webkit-font-smoothing: antialiased;
+  }
+  .hoja {
+    max-width: 44rem;
+    margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 1rem 4rem;
+    display: grid;
+    gap: 2.25rem;
+  }
+  a { color: var(--acento); }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+  h1, h2, h3 { text-wrap: balance; line-height: 1.2; margin: 0; }
+  p, ul, ol { margin: 0; }
+  ul, ol { padding-left: 1.3rem; display: grid; gap: .35rem; }
+
+  .volver { font-weight: 600; text-decoration: none; }
+
+  .portada { display: grid; gap: .75rem; }
+  .portada .marca {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--acento);
+  }
+  .portada .marca::before {
+    content: ""; width: .9rem; height: .9rem; border-radius: 50%; background: var(--acento);
+  }
+  .portada h1 { font-size: 2.1rem; letter-spacing: -.01em; }
+  .portada p { color: var(--texto-suave); max-width: 36rem; }
+
+  .indice {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: .4rem;
+    list-style: none; padding: 0;
+  }
+  .indice a {
+    display: flex; align-items: baseline; gap: .5rem;
+    padding: .5rem .65rem; border-radius: .7rem; background: var(--superficie); border: 1px solid var(--borde);
+    text-decoration: none; color: var(--texto); font-weight: 600; font-size: .88rem; line-height: 1.3;
+  }
+  .indice a span { color: var(--texto-suave); font-weight: 500; font-variant-numeric: tabular-nums; min-width: 1.2rem; }
+  .indice a.urgente { background: var(--acento-suave); border-color: transparent; }
+
+  section { display: grid; gap: .9rem; scroll-margin-top: 1rem; }
+  section > h2 { font-size: 1.45rem; display: flex; gap: .6rem; align-items: baseline; }
+  section > h2 .num { color: var(--acento); font-variant-numeric: tabular-nums; font-size: 1rem; }
+  h3 { font-size: 1.08rem; margin-top: .4rem; }
+
+  /* Cómo se ve en la app: rutas y botones dibujados igual que en la pantalla. */
+  .ruta {
+    display: inline; font-size: .92em; font-weight: 600; white-space: normal;
+    background: var(--acento-suave); color: var(--texto); padding: .05rem .4rem; border-radius: .35rem;
+  }
+  .btn {
+    display: inline-block; font-size: .9em; font-weight: 600; line-height: 1.3;
+    padding: .1rem .55rem; border-radius: .5rem; background: var(--acento); color: var(--sobre-acento);
+    white-space: nowrap;
+  }
+  .btn.sec { background: transparent; color: var(--acento); box-shadow: inset 0 0 0 1.5px var(--acento); }
+
+  .pantalla {
+    background: var(--superficie); border: 1px solid var(--borde); border-radius: 1rem;
+    padding: 1rem; display: grid; gap: .6rem;
+  }
+  .pantalla .tit { font-weight: 700; }
+  .pantalla small { color: var(--texto-suave); }
+  .filas { display: grid; gap: .45rem; }
+  .filas > div {
+    display: flex; justify-content: space-between; gap: .75rem; align-items: center; flex-wrap: wrap;
+    padding: .55rem .7rem; border-radius: .6rem; background: var(--fondo);
+  }
+  .filas > div > :first-child { min-width: 0; }
+
+  .pasos { counter-reset: paso; list-style: none; padding: 0; display: grid; gap: .6rem; }
+  .pasos > li { counter-increment: paso; display: grid; grid-template-columns: 1.9rem 1fr; gap: .6rem; align-items: start; }
+  .pasos > li::before {
+    content: counter(paso); display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 50%;
+    background: var(--acento-suave); color: var(--acento); font-weight: 700; font-size: .9rem;
+  }
+
+  .dos { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: .75rem; }
+  .dos > div { min-width: 0; }
+
+  .nota {
+    background: var(--alerta-suave); color: var(--texto); border-radius: .8rem; padding: .75rem .9rem;
+  }
+  .nota strong { color: var(--alerta); }
+
+  .tabla { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--borde); vertical-align: top; }
+  th { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--texto-suave); }
+
+  /* Errores: el mensaje tal cual sale en la app, qué quiere decir y qué hacer. */
+  .buscador input {
+    width: 100%; font: inherit; padding: .7rem .9rem; border-radius: .8rem;
+    border: 1.5px solid var(--borde); background: var(--superficie); color: var(--texto);
+  }
+  .grupo-errores { display: grid; gap: .6rem; }
+  .grupo-errores > h3 { color: var(--texto-suave); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; }
+  .error {
+    background: var(--superficie); border: 1px solid var(--borde); border-radius: .9rem; padding: .85rem .95rem;
+    display: grid; gap: .45rem;
+  }
+  .error .msj {
+    font-weight: 600; color: var(--error); background: var(--error-suave);
+    padding: .45rem .65rem; border-radius: .55rem; overflow-wrap: anywhere;
+  }
+  .error .msj.aviso { color: var(--texto); background: var(--acento-suave); }
+  .error dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: .3rem .7rem; }
+  .error dt { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--texto-suave); padding-top: .15rem; }
+  .error dd { margin: 0; min-width: 0; }
+  @media (max-width: 30rem) {
+    .error dl { grid-template-columns: 1fr; }
+    .error dd { margin-bottom: .3rem; }
+  }
+  .sin-resultados { color: var(--texto-suave); }
+
+  .pie { color: var(--texto-suave); font-size: .9rem; border-top: 1px solid var(--borde); padding-top: 1rem; }
+
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+<!-- APP-INICIO -->
+</head>
+<body>
+<!-- APP-FIN -->
+<div class="hoja">
+  <!-- APP-INICIO -->
+  <a class="volver" href="./#/">‹ Volver a La Doc</a>
+  <!-- APP-FIN -->
+
+  <header class="portada">
+    <span class="marca">La Doc · Manual de uso</span>
+    <h1>Cómo usar La Doc</h1>
+    <p>Todo lo que hace la app, botón por botón, y qué hacer si aparece un mensaje de error. Este manual está dentro de la app y se abre sin internet: <span class="ruta">Inicio › ⚙ Más opciones › 📖 Manual de uso</span>.</p>
+  </header>
+
+  <nav aria-label="Índice">
+    <ul class="indice">
+      <li><a href="#instalar"><span>1</span>Instalar y actualizar</a></li>
+      <li><a href="#inicio"><span>2</span>La pantalla de Inicio</a></li>
+      <li><a href="#materias"><span>3</span>Materias y temas</a></li>
+      <li><a href="#notas"><span>4</span>Fármacos, patologías y casos</a></li>
+      <li><a href="#enlaces"><span>5</span>Enlaces entre notas</a></li>
+      <li><a href="#repaso"><span>6</span>Repaso de hoy</a></li>
+      <li><a href="#escuchar"><span>7</span>Escuchar como podcast</a></li>
+      <li><a href="#ia"><span>8</span>Cargar con IA</a></li>
+      <li><a href="#respaldo"><span>9</span>Respaldo en Google Drive</a></li>
+      <li><a href="#opciones"><span>10</span>Más opciones y colores</a></li>
+      <li><a href="#internet"><span>11</span>Con y sin internet</a></li>
+      <li><a class="urgente" href="#errores"><span>12</span>Errores y soluciones</a></li>
+    </ul>
+  </nav>
+
+  <section id="instalar">
+    <h2><span class="num">1</span>Instalar y actualizar</h2>
+    <p>La Doc es una página web que se instala como app. Ábrela la primera vez <strong>con wifi</strong>: así se guarda completa en el teléfono y después funciona sin internet.</p>
+    <p>Dirección: <a href="https://borrerom.github.io/la-doc./">borrerom.github.io/la-doc.</a> (con el punto al final).</p>
+    <div class="dos">
+      <div class="pantalla">
+        <span class="tit">Android (Chrome)</span>
+        <ol class="pasos">
+          <li>Abre la dirección en Chrome.</li>
+          <li>Toca los tres puntos <strong>⋮</strong> de arriba a la derecha.</li>
+          <li>Toca <strong>Instalar app</strong> o <strong>Agregar a la pantalla principal</strong>.</li>
+          <li>Abre La Doc desde el ícono nuevo, no desde Chrome.</li>
+        </ol>
+      </div>
+      <div class="pantalla">
+        <span class="tit">iPhone (Safari)</span>
+        <ol class="pasos">
+          <li>Abre la dirección en Safari (no en otro navegador).</li>
+          <li>Toca el botón <strong>Compartir</strong> (el cuadro con la flecha hacia arriba).</li>
+          <li>Toca <strong>Agregar a inicio</strong> y luego <strong>Agregar</strong>.</li>
+          <li>Abre La Doc desde el ícono nuevo.</li>
+        </ol>
+      </div>
+    </div>
+    <h3>Cuando hay una versión nueva</h3>
+    <p>Abajo de la pantalla aparece este aviso. Toca <span class="btn">Actualizar</span> y la app se recarga con lo nuevo. Si tocas <span class="btn sec">Después</span>, se actualiza la próxima vez.</p>
+    <div class="pantalla">
+      <span>Hay una versión nueva de La Doc.</span>
+      <div><span class="btn">Actualizar</span> <span class="btn sec">Después</span></div>
+    </div>
+    <p>La versión que tienes se ve <strong>al final de la pantalla de Inicio</strong> (por ejemplo «Versión 0.22.0»).</p>
+    <h3>Si sigues viendo una versión vieja</h3>
+    <p>A veces el teléfono guarda la versión anterior. Con internet:</p>
+    <ol>
+      <li>Cierra La Doc del todo (deslízala fuera de las apps abiertas) y ábrela de nuevo. Espera unos segundos: debería salir el aviso de <span class="btn">Actualizar</span>.</li>
+      <li>Si no sale, repite una vez más. En iPhone suele pasar más que en Android.</li>
+      <li>Revisa el número al final de Inicio para confirmar que cambió.</li>
+    </ol>
+    <p class="nota"><strong>No borres la app ni los datos del navegador para actualizar.</strong> Eso borra tus fichas del teléfono. Si algún día hace falta, haz antes <span class="btn">Respaldar ahora</span> (sección 9).</p>
+  </section>
+
+  <section id="inicio">
+    <h2><span class="num">2</span>La pantalla de Inicio</h2>
+    <p>Es el tablero. De arriba hacia abajo:</p>
+    <div class="pantalla">
+      <div class="filas">
+        <div><span><strong>La Doc</strong> · 🔍 · <small>Con internet</small></span><small>barra de arriba</small></div>
+        <div><span><strong>Repaso de hoy</strong><br><small>12 fichas pendientes</small></span><span class="btn">Repasar</span></div>
+        <div><span><strong>🎧 Escuchar mis fichas</strong></span><small>sección 7</small></div>
+        <div><span><strong>Farmacología 1</strong> <small>· 2 temas · 3 fármacos</small></span><small>›</small></div>
+        <div><span><strong>Morfofisiopatología 2</strong></span><small>›</small></div>
+        <div><span><strong>Práctica Médica 1</strong></span><small>›</small></div>
+        <div><span><strong>📥 Cargas con IA</strong></span><small>sección 8</small></div>
+        <div><span><strong>☁️ Respaldo en Google Drive</strong></span><small>sección 9</small></div>
+        <div><span><strong>⚙ Más opciones</strong></span><small>sección 10</small></div>
+      </div>
+    </div>
+    <ul>
+      <li><strong>🔍 Buscar</strong>: arriba a la derecha. Escribe el nombre de un fármaco, una patología, un caso o una etiqueta y toca el resultado para abrir la nota.</li>
+      <li><strong>Con internet / Sin internet</strong>: te dice si el teléfono tiene conexión ahora. Sin internet casi todo funciona igual (sección 11).</li>
+      <li>«Repaso de hoy» solo aparece cuando tienes fichas para repasar o ya repasaste algo hoy.</li>
+    </ul>
+  </section>
+
+  <section id="materias">
+    <h2><span class="num">3</span>Materias y temas</h2>
+    <p>Todo se ordena así: <span class="ruta">Semestre › Materia › Tema › Subtema (opcional) › Notas</span>.</p>
+    <p>Ya vienen creadas tres materias: <strong>Farmacología 1</strong> (fármacos), <strong>Morfofisiopatología 2</strong> (patologías) y <strong>Práctica Médica 1</strong> (casos clínicos).</p>
+    <ul>
+      <li><strong>Abrir una materia</strong>: toca su nombre en Inicio y se despliega con sus temas. La app recuerda cuáles dejaste abiertas.</li>
+      <li><span class="btn sec">+ Nuevo tema</span>: escribe el nombre (por ejemplo «Antibióticos») y toca <span class="btn">Agregar</span>.</li>
+      <li><span class="btn sec">⚙ Organizar temas</span>: para crear subtemas (por ejemplo Antibióticos › Penicilinas), cambiar nombres (<strong>Renombrar</strong>) o <strong>Borrar</strong> temas.</li>
+      <li><span class="btn sec">+ Agregar materia</span>: al final de cada semestre.</li>
+      <li><strong>Otro semestre</strong>: en <span class="ruta">⚙ Más opciones › Agregar otro semestre</span>.</li>
+    </ul>
+    <h3>Dentro de un tema</h3>
+    <p>Al tocar un tema se abre su pantalla. Ahí ves sus notas agrupadas por tipo (💊 Fármacos, 🩺 Patologías, 🧑‍⚕️ Casos) y estos botones:</p>
+    <ul>
+      <li><span class="btn">+ Nuevo fármaco</span>, <span class="btn">+ Nueva patología</span>, <span class="btn">+ Nuevo caso</span>: llenas la nota a mano. Primero sale el tipo propio de la materia.</li>
+      <li><span class="btn sec">📷 Cargar con IA</span>: la IA llena las notas desde fotos, PDF o voz (sección 8).</li>
+      <li><span class="btn sec">🎧 Escuchar el mazo</span>: escucha solo las fichas de este tema.</li>
+      <li><strong>Fichas / Tabla</strong>: cambia entre ver cada nota como ficha o todas en una tabla para comparar.</li>
+    </ul>
+    <h3>Notas de ejemplo</h3>
+    <p>Cada materia trae notas marcadas <strong>«ejemplo»</strong> para que veas cómo se llena cada tipo. Cuando ya no las necesites, entra en <span class="btn sec">⚙ Organizar temas</span> de esa materia y toca <span class="btn sec">Borrar ejemplos</span>.</p>
+  </section>
+
+  <section id="notas">
+    <h2><span class="num">4</span>Fármacos, patologías y casos</h2>
+    <p>Hay tres tipos de nota. Todas se ven igual: una ficha con sus campos y un botón <span class="btn sec">🔊 Escuchar</span> que la lee en voz alta (toca <span class="btn sec">■ Detener</span> para pararla). Con <span class="btn sec">Editar</span> la cambias y con <span class="btn">Guardar</span> la guardas.</p>
+    <div class="tabla">
+      <table>
+        <thead><tr><th>Tipo</th><th>Campos</th></tr></thead>
+        <tbody>
+          <tr><td><strong>💊 Fármaco</strong></td><td>Nombre, grupo, vía de administración, mecanismo de acción, farmacocinética (ADME), indicaciones, contraindicaciones, efectos adversos, interacciones, dosis.</td></tr>
+          <tr><td><strong>🩺 Patología</strong></td><td>Nombre, definición, causas, fisiopatología, signos y síntomas, diagnóstico, tratamiento, complicaciones.</td></tr>
+          <tr><td><strong>🧑‍⚕️ Caso clínico</strong></td><td>Título, paciente, motivo de consulta, hallazgos, preguntas, respuesta.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li>Algunos campos son listas: escribe <strong>un elemento por línea</strong>. Las etiquetas van <strong>separadas por coma</strong>, por ejemplo: hipertensión, embarazo.</li>
+      <li>De cada nota salen <strong>fichas de repaso solas</strong>, una por cada campo con contenido. Si editas la nota, sus fichas se actualizan.</li>
+      <li>Para cambiar qué campos tiene cada tipo: <span class="ruta">⚙ Más opciones › Campos de las fichas</span>.</li>
+      <li>Para borrar una nota: ábrela, toca <span class="btn sec">Editar</span> y luego <strong>Borrar</strong>. La app pregunta antes.</li>
+    </ul>
+  </section>
+
+  <section id="enlaces">
+    <h2><span class="num">5</span>Enlaces entre notas</h2>
+    <p>Las notas se conectan entre sí. Al final de cada nota están sus enlaces, por ejemplo:</p>
+    <div class="pantalla">
+      <span>🔗 Trata: Presión arterial alta (hipertensión)</span>
+      <span>🔗 Aparece en el caso: Hombre de 56 años en control de rutina</span>
+    </div>
+    <div class="tabla">
+      <table>
+        <thead><tr><th>Desde</th><th>Relación</th><th>Del otro lado se lee</th></tr></thead>
+        <tbody>
+          <tr><td>Fármaco</td><td>Trata</td><td>Se trata con</td></tr>
+          <tr><td>Fármaco</td><td>Contraindicado en</td><td>No usar</td></tr>
+          <tr><td>Fármaco</td><td>Interactúa con</td><td>Interactúa con</td></tr>
+          <tr><td>Caso</td><td>Incluye</td><td>Aparece en el caso</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><strong>Sugerencias</strong>: cuando guardas una nota, la app busca relaciones y te pregunta: <em>«💡 ¿Enlazar? Trata: …»</em>. Toca <span class="btn">✓ Confirmar</span> si es correcta o <span class="btn sec">✕ Descartar</span> si no.</li>
+      <li><strong>A mano</strong>: toca <span class="btn sec">+ Enlazar con otra nota</span>, elige la <strong>Relación</strong> y la nota <strong>Con</strong>, y toca <span class="btn">Enlazar</span>.</li>
+      <li>Toca un enlace para saltar a la otra nota.</li>
+    </ul>
+  </section>
+
+  <section id="repaso">
+    <h2><span class="num">6</span>Repaso de hoy</h2>
+    <p>La app decide qué fichas te toca repasar cada día, como Anki: lo que te cuesta vuelve pronto y lo que sabes bien vuelve más tarde.</p>
+    <ol class="pasos">
+      <li>En Inicio toca <span class="btn">Repasar</span>.</li>
+      <li>Lee la pregunta y trata de responder en tu cabeza.</li>
+      <li>Toca <span class="btn">Mostrar respuesta</span>.</li>
+      <li>Califica con sinceridad cómo te fue.</li>
+    </ol>
+    <div class="tabla">
+      <table>
+        <thead><tr><th>Botón</th><th>Cuándo tocarlo</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Mal</strong></td><td>No te acordabas. Vuelve hoy mismo.</td></tr>
+          <tr><td><strong>Difícil</strong></td><td>Te acordaste, pero con mucho esfuerzo.</td></tr>
+          <tr><td><strong>Bien</strong></td><td>Te acordaste normal. Es el botón de casi siempre.</td></tr>
+          <tr><td><strong>Fácil</strong></td><td>Lo sabías al instante. Tarda más en volver.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Cuando terminas sale «¡Listo por hoy!». El repaso funciona sin internet.</p>
+  </section>
+
+  <section id="escuchar">
+    <h2><span class="num">7</span>Escuchar como podcast</h2>
+    <p>En Inicio toca <strong>🎧 Escuchar mis fichas</strong>. La app lee la pregunta, hace una pausa para que respondas tú y luego lee la respuesta.</p>
+    <ul>
+      <li><strong>Qué escuchar</strong>: el repaso de hoy o una materia completa.</li>
+      <li><strong>Voz</strong>:
+        <ul>
+          <li><em>Del teléfono (solo con pantalla encendida)</em>: no descarga nada. Es la recomendada con internet lento.</li>
+          <li><em>Neuronal (sigue con pantalla apagada)</em>: suena más natural y sigue con la pantalla apagada, pero hay que tocar <span class="btn sec">Descargar voz (63 MB, una sola vez)</span>. Hazlo solo con wifi.</li>
+        </ul>
+      </li>
+      <li><strong>Avance</strong>: <em>Automático, con pausa</em> (sigue solo) o <em>Manual, espera tu toque</em> (avanza cuando tocas).</li>
+      <li><strong>Pausa antes de la respuesta</strong> (1 a 15 segundos) y <strong>Velocidad</strong> de la voz.</li>
+      <li>Toca <span class="btn">▶ Empezar</span>. Mientras suena puedes <span class="btn sec">Pausar</span>, <span class="btn sec">Reanudar</span> o <span class="btn sec">Detener</span>.</li>
+    </ul>
+    <p>Para comprobar qué voz sigue sonando con la pantalla apagada en tu teléfono: <span class="ruta">⚙ Más opciones › Prueba de audio</span>.</p>
+  </section>
+
+  <section id="ia">
+    <h2><span class="num">8</span>Cargar con IA</h2>
+    <p>La IA lee tus apuntes y llena las notas por ti. Tú revisas antes de que se guarden. Necesita una <strong>clave gratis</strong> la primera vez.</p>
+    <h3>Poner la clave (una sola vez)</h3>
+    <ol class="pasos">
+      <li>En la computadora o el teléfono, entra a <a href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a> con tu cuenta de Gmail.</li>
+      <li>Toca <strong>Create API key</strong> y copia la clave que aparece.</li>
+      <li>En La Doc: <span class="ruta">⚙ Más opciones › 🤖 Inteligencia artificial</span>, en Gemini pega la clave donde dice «Pegar la clave aquí» y toca <span class="btn">Guardar</span>.</li>
+      <li>Toca <span class="btn sec">Probar</span>. Si dice «Funciona. Respondió: …», ya está.</li>
+    </ol>
+    <p>Puedes agregar también claves de Groq u OpenRouter como respaldo: si Gemini se queda sin cuota, la app usa la otra.</p>
+    <h3>Cargar material</h3>
+    <ol class="pasos">
+      <li>Entra al tema donde quieres guardar y toca <span class="btn sec">📷 Cargar con IA</span>.</li>
+      <li>Elige cómo: <strong>📷 Fotos</strong> (<span class="btn sec">📷 Tomar foto</span> o <span class="btn sec">Elegir de la galería</span>, varias páginas), <strong>📄 PDF</strong> (<span class="btn sec">Elegir PDF</span>, máximo 14 MB) o <strong>🎙 Voz</strong> (<span class="btn sec">🎙 Grabar</span> y <span class="btn sec">■ Terminar</span>, hasta 5 minutos).</li>
+      <li>Si quieres, escribe <strong>Indicaciones para la IA</strong>, por ejemplo «solo los betabloqueantes».</li>
+      <li>Toca <span class="btn">Guardar en la cola</span>. Puedes seguir usando la app.</li>
+    </ol>
+    <h3>Revisar lo que hizo la IA</h3>
+    <p>En Inicio, <strong>📥 Cargas con IA</strong> muestra cada carga con su estado:</p>
+    <div class="tabla">
+      <table>
+        <thead><tr><th>Estado</th><th>Qué quiere decir</th></tr></thead>
+        <tbody>
+          <tr><td>En cola: se procesa cuando haya internet</td><td>Está guardada. Se manda sola cuando vuelva la conexión.</td></tr>
+          <tr><td>La IA lo está leyendo…</td><td>Espera, tarda de unos segundos a un par de minutos.</td></tr>
+          <tr><td>Listo para revisar</td><td>Toca <span class="btn">Revisar 3 pendientes</span>.</td></tr>
+          <tr><td>Revisado y guardado</td><td>Ya está en tu tema.</td></tr>
+          <tr><td>No se pudo procesar</td><td>Debajo sale el motivo. Busca el mensaje en la sección 12 y toca <span class="btn sec">Reintentar</span>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Al revisar, cada nota propuesta dice su tipo (fármaco, patología o caso). Corrige lo que haga falta y toca <span class="btn">Guardar en el tema</span>, o <span class="btn sec">Descartar</span> si no sirve. Al final sale «Listo. Guardaste…». <strong>Revisa siempre</strong>: la IA puede equivocarse.</p>
+  </section>
+
+  <section id="respaldo">
+    <h2><span class="num">9</span>Respaldo en Google Drive</h2>
+    <p>Tus fichas viven en el teléfono. El respaldo guarda una copia en tu Google Drive para no perderlas si cambias o pierdes el teléfono.</p>
+    <h3>Vincular tu cuenta (una vez)</h3>
+    <ol class="pasos">
+      <li>En Inicio toca <strong>☁️ Respaldo en Google Drive</strong>.</li>
+      <li>Toca <span class="btn">Entrar con Google</span> y elige tu cuenta de Gmail.</li>
+      <li>Si dice <em>«Google no verificó esta app»</em>, toca <strong>Continuar</strong>. Es normal: la app es privada.</li>
+      <li>En la pantalla de permisos <strong>marca la casilla de Google Drive</strong> y toca Continuar.</li>
+    </ol>
+    <h3>Después</h3>
+    <ul>
+      <li>Con internet, lo nuevo se respalda <strong>solo</strong>. Puedes forzarlo con <span class="btn">Respaldar ahora</span>.</li>
+      <li><span class="btn sec">Recuperar desde Drive</span>: trae al teléfono lo que tienes en Drive. <strong>Reemplaza</strong> lo que hay en el teléfono; la app pregunta antes.</li>
+      <li>En un teléfono nuevo, al vincular la cuenta la app ofrece: <span class="btn">Sí, recuperar mi respaldo</span> o <span class="btn sec">No, empezar con lo de este teléfono</span>.</li>
+    </ul>
+    <h3>Cambiar de cuenta</h3>
+    <ul>
+      <li><span class="btn sec">Desvincular cuenta</span>: quita la cuenta de Google del teléfono. Tus fichas se quedan.</li>
+      <li><span class="btn sec">Preparar el teléfono para otra persona</span>: respalda todo en tu Drive y después borra del teléfono tus fichas, tu repaso y tus claves de IA. La otra persona entra con su propia cuenta.</li>
+    </ul>
+  </section>
+
+  <section id="opciones">
+    <h2><span class="num">10</span>Más opciones y colores</h2>
+    <p>Al final de Inicio, toca <strong>⚙ Más opciones</strong>:</p>
+    <ul>
+      <li><strong>🌙 Colores de la pantalla</strong>: <em>Modo Desi</em> (claro u oscuro según el teléfono), <em>Día</em>, <em>Noche</em> y <em>Estudiando con todo en la noche</em> (letra crema y ámbar, con menos luz azul).</li>
+      <li><strong>🤖 Inteligencia artificial</strong>: las claves de Gemini, Groq y OpenRouter (sección 8).</li>
+      <li><strong>Campos de las fichas</strong>: agrega, quita o cambia el nombre de los campos de cada tipo de nota.</li>
+      <li><strong>Prueba de audio</strong>: qué voz sigue sonando con la pantalla apagada.</li>
+      <li><strong>📖 Manual de uso</strong>: este manual.</li>
+      <li><strong>Agregar otro semestre</strong>.</li>
+      <li><strong>Este teléfono</strong>: «Datos protegidos: sí» quiere decir que el teléfono no borrará tus datos para liberar espacio. Si dice «no», instala la app en la pantalla de inicio (sección 1) y mantén el respaldo vinculado.</li>
+    </ul>
+  </section>
+
+  <section id="internet">
+    <h2><span class="num">11</span>Con y sin internet</h2>
+    <div class="tabla">
+      <table>
+        <thead><tr><th>Sin internet funciona</th><th>Necesita internet</th></tr></thead>
+        <tbody>
+          <tr><td>Ver, crear y editar notas</td><td>Que la IA procese las cargas (quedan en cola)</td></tr>
+          <tr><td>Repaso de hoy</td><td>Respaldo y recuperación en Drive (se hace al volver)</td></tr>
+          <tr><td>Buscar y enlaces</td><td>Descargar la voz neuronal (una vez)</td></tr>
+          <tr><td>Escuchar con la voz del teléfono o la neuronal ya descargada</td><td>Recibir versiones nuevas de la app</td></tr>
+          <tr><td>Tomar fotos y grabar para la IA (se guardan en la cola)</td><td>Poner y probar las claves de IA</td></tr>
+          <tr><td>Este manual</td><td>La primera apertura de la app</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="errores">
+    <h2><span class="num">12</span>Errores y soluciones</h2>
+    <p>Los mensajes están escritos tal como salen en la app. Escribe una palabra del mensaje para encontrarlo.</p>
+    <label class="buscador">
+      <input id="buscar-error" type="search" placeholder="Por ejemplo: cuota, 503, Drive, micrófono" aria-label="Buscar un mensaje de error" autocomplete="off">
+    </label>
+
+    <div class="grupo-errores">
+      <h3>Inteligencia artificial</h3>
+      <article class="error">
+        <p class="msj">La clave no es válida o no tiene permiso.</p>
+        <dl><dt>Qué es</dt><dd>La clave pegada está mal copiada, incompleta o fue borrada en Google.</dd>
+        <dt>Qué hacer</dt><dd>Vuelve a <a href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a>, copia la clave completa, pégala de nuevo en <span class="ruta">🤖 Inteligencia artificial</span>, toca <span class="btn">Guardar</span> y <span class="btn sec">Probar</span>.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">Se acabó la cuota gratis por ahora.</p>
+        <dl><dt>Qué es</dt><dd>La clave gratis tiene un límite de usos por minuto y por día y ya se usó.</dd>
+        <dt>Qué hacer</dt><dd>Espera unos minutos (o hasta mañana si fue el límite del día) y toca <span class="btn sec">Reintentar</span>. Para no esperar, agrega una clave de Groq u OpenRouter como respaldo. Las cargas no se pierden.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">Google está saturado ahora mismo (error 503). No es tu clave: intenta de nuevo en unos minutos.</p>
+        <dl><dt>Qué es</dt><dd>Los servidores de Google tienen demasiada gente. Puede salir con 500, 502, 503 o 504. La app ya reintentó sola y probó otros modelos.</dd>
+        <dt>Qué hacer</dt><dd>Nada de tu lado: espera unos minutos y toca <span class="btn sec">Reintentar</span> o <span class="btn sec">Probar</span>. Si sale solo en un teléfono, revisa que la app esté actualizada (sección 1).</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">Ese modelo ya no está disponible. Cambia el modelo en Ajustes de IA.</p>
+        <dl><dt>Qué es</dt><dd>Google retiró el modelo que tenía guardado la app.</dd>
+        <dt>Qué hacer</dt><dd>Actualiza La Doc: la versión nueva elige un modelo vigente sola. Si sigue, avísale a quien te instaló la app.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">No hay conexión con el proveedor.</p>
+        <dl><dt>Qué es</dt><dd>No hay internet, o es muy débil para mandar las fotos.</dd>
+        <dt>Qué hacer</dt><dd>La carga queda en la cola. Cuando tengas wifi o mejor señal, se manda sola o toca <span class="btn sec">Reintentar</span>.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">Falta una clave de IA. Agrégala en Inicio › Inteligencia artificial.</p>
+        <dl><dt>Qué es</dt><dd>Todavía no hay ninguna clave guardada. También puede salir como «Falta la clave.» al tocar Probar.</dd>
+        <dt>Qué hacer</dt><dd>Sigue «Poner la clave» en la sección 8.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">Para notas de voz hace falta la clave de Gemini o de Groq (o esperar a que se recupere su cuota).</p>
+        <dl><dt>Qué es</dt><dd>OpenRouter no entiende audio. Solo Gemini y Groq lo hacen.</dd>
+        <dt>Qué hacer</dt><dd>Agrega la clave de Gemini, o espera a que se recupere su cuota y toca <span class="btn sec">Reintentar</span>.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">Para PDF hace falta la clave de Gemini (o esperar a que se recupere su cuota).</p>
+        <dl><dt>Qué es</dt><dd>Solo Gemini lee PDF.</dd>
+        <dt>Qué hacer</dt><dd>Agrega la clave de Gemini o espera su cuota. Otra opción: toma fotos de las páginas y cárgalas como 📷 Fotos.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">Gemini: no encontró fármacos, patologías ni casos en este material.</p>
+        <dl><dt>Qué es</dt><dd>La IA no reconoció contenido médico que pueda convertir en notas.</dd>
+        <dt>Qué hacer</dt><dd>Toma la foto con buena luz, derecha y sin sombras, una página por foto. Escribe en Indicaciones qué buscar, por ejemplo «fármacos antihipertensivos». Borra la carga y vuelve a cargar.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">La respuesta de la IA no tiene el formato esperado.</p>
+        <dl><dt>Qué es</dt><dd>La IA contestó algo que la app no pudo leer. También puede salir «El proveedor respondió vacío.»</dd>
+        <dt>Qué hacer</dt><dd>Toca <span class="btn sec">Reintentar</span>. Si se repite, divide el material en cargas más cortas.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">El proveedor respondió con un error (400).</p>
+        <dl><dt>Qué es</dt><dd>Un error poco común del servicio de IA. El número y el «Detalle» dicen cuál fue.</dd>
+        <dt>Qué hacer</dt><dd>Toca <span class="btn sec">Reintentar</span> más tarde. Si se repite, manda captura de pantalla del mensaje completo.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">Los archivos de esta carga ya no están en el teléfono.</p>
+        <dl><dt>Qué es</dt><dd>Las fotos, el PDF o el audio de esa carga se borraron del teléfono.</dd>
+        <dt>Qué hacer</dt><dd>Toca <span class="btn sec">Borrar</span> en esa carga y vuelve a cargar el material.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">No hay permiso para usar el micrófono. Actívalo en los ajustes del navegador.</p>
+        <dl><dt>Qué es</dt><dd>El teléfono no deja que La Doc use el micrófono.</dd>
+        <dt>Qué hacer</dt><dd>Android: en Chrome toca ⋮ › Configuración › Configuración de sitios › Micrófono y permite borrerom.github.io. iPhone: Ajustes › Safari › Micrófono › Permitir. Vuelve a tocar <span class="btn sec">🎙 Grabar</span>.</dd></dl>
+      </article>
+    </div>
+
+    <div class="grupo-errores">
+      <h3>Respaldo en Google Drive</h3>
+      <article class="error">
+        <p class="msj aviso">Google no verificó esta app</p>
+        <dl><dt>Qué es</dt><dd>Pantalla de Google al entrar. La app es privada y no pasó por la revisión pública de Google. No es un error.</dd>
+        <dt>Qué hacer</dt><dd>Toca <strong>Continuar</strong>.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">Google no dio permiso para usar Drive. Toca de nuevo 'Entrar con Google' y, en la pantalla de permisos, marca la casilla de Google Drive.</p>
+        <dl><dt>Qué es</dt><dd>Al entrar no se marcó la casilla de Drive.</dd>
+        <dt>Qué hacer</dt><dd>Lo que dice el mensaje: <span class="btn">Entrar con Google</span> y marca la casilla.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">El permiso de Google venció. Toca 'Respaldar ahora' para renovarlo.</p>
+        <dl><dt>Qué es</dt><dd>Google pide renovar el permiso cada cierto tiempo (más o menos cada semana).</dd>
+        <dt>Qué hacer</dt><dd>Toca <span class="btn">Respaldar ahora</span> y elige tu cuenta otra vez.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">Sin internet: el respaldo se hará cuando vuelva la conexión.</p>
+        <dl><dt>Qué es</dt><dd>Aviso, no error. También sale como «Ahora no hay internet: el respaldo se hará cuando vuelva.»</dd>
+        <dt>Qué hacer</dt><dd>Nada. Tus fichas están a salvo en el teléfono y se respaldan solas al volver el internet.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">Google Drive pidió esperar un momento. El respaldo se reintentará solo.</p>
+        <dl><dt>Qué es</dt><dd>Se hicieron muchos respaldos seguidos.</dd>
+        <dt>Qué hacer</dt><dd>Nada, se reintenta solo.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">No hay ningún respaldo en este Drive todavía.</p>
+        <dl><dt>Qué es</dt><dd>Tocaste Recuperar con una cuenta que nunca respaldó, o es otra cuenta de Gmail.</dd>
+        <dt>Qué hacer</dt><dd>Revisa que sea la misma cuenta del teléfono anterior. Si es la primera vez, toca <span class="btn">Respaldar ahora</span>.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">Primero vincula una cuenta de Google.</p>
+        <dl><dt>Qué es</dt><dd>Intentaste respaldar o recuperar sin cuenta vinculada.</dd>
+        <dt>Qué hacer</dt><dd>Toca <span class="btn">Entrar con Google</span> (sección 9).</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">La API de Google Drive no está activada en el proyecto "La Doc" de Google Cloud.</p>
+        <dl><dt>Qué es</dt><dd>Un ajuste de la configuración de la app en Google, no de tu teléfono.</dd>
+        <dt>Qué hacer</dt><dd>Avísale a quien administra la app y manda captura del mensaje.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">Google Drive respondió con un error (500).</p>
+        <dl><dt>Qué es</dt><dd>Un problema pasajero de Google Drive.</dd>
+        <dt>Qué hacer</dt><dd>Toca <span class="btn">Respaldar ahora</span> más tarde. Si se repite, manda captura.</dd></dl>
+      </article>
+    </div>
+
+    <div class="grupo-errores">
+      <h3>Audio</h3>
+      <article class="error">
+        <p class="msj aviso">El 🔊 no suena en iPhone</p>
+        <dl><dt>Qué es</dt><dd>El iPhone está en silencio o no tiene la voz en español.</dd>
+        <dt>Qué hacer</dt><dd>Quita el modo silencio (botón del costado), sube el volumen y revisa en Ajustes › Accesibilidad › Contenido leído › Voces que haya una voz en Español descargada.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj aviso">El 🔊 no suena en Android</p>
+        <dl><dt>Qué es</dt><dd>Falta la voz en español del teléfono.</dd>
+        <dt>Qué hacer</dt><dd>Ajustes › Accesibilidad › Texto a voz: elige Servicios de voz de Google, entra en Instalar datos de voz y descarga Español. Sube el volumen de multimedia.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj">Este navegador no puede leer en voz alta.</p>
+        <dl><dt>Qué es</dt><dd>Estás usando un navegador sin voz.</dd>
+        <dt>Qué hacer</dt><dd>Abre La Doc en Chrome (Android) o Safari (iPhone), o usa la voz Neuronal.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj aviso">Se calla al apagar la pantalla</p>
+        <dl><dt>Qué es</dt><dd>La voz «Del teléfono» solo suena con la pantalla encendida.</dd>
+        <dt>Qué hacer</dt><dd>Deja la pantalla encendida, o cambia a la voz Neuronal (descarga de 63 MB con wifi).</dd></dl>
+      </article>
+    </div>
+
+    <div class="grupo-errores">
+      <h3>La app</h3>
+      <article class="error">
+        <p class="msj aviso">En un teléfono funciona y en otro no</p>
+        <dl><dt>Qué es</dt><dd>Casi siempre, uno de los dos tiene una versión vieja guardada.</dd>
+        <dt>Qué hacer</dt><dd>Compara el número de versión al final de Inicio en los dos y actualiza (sección 1).</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj aviso">Datos protegidos: no</p>
+        <dl><dt>Qué es</dt><dd>Si el teléfono se llena, podría borrar los datos de la app.</dd>
+        <dt>Qué hacer</dt><dd>Instala La Doc en la pantalla de inicio y deja el respaldo de Drive vinculado.</dd></dl>
+      </article>
+      <article class="error">
+        <p class="msj aviso">No hay fichas para repasar</p>
+        <dl><dt>Qué es</dt><dd>No es error: hoy no te toca ninguna, o todavía no tienes notas.</dd>
+        <dt>Qué hacer</dt><dd>Crea notas o carga material con IA. Mañana tendrás fichas nuevas.</dd></dl>
+      </article>
+    </div>
+
+    <p class="sin-resultados" id="sin-resultados" hidden>No hay ningún mensaje con esa palabra. Manda una captura de pantalla del mensaje para revisarlo.</p>
+  </section>
+
+  <p class="pie">Si algo no aparece aquí, toma una captura de pantalla del mensaje completo (con el número de versión del final de Inicio) y mándala. Manual para La Doc 0.22.0.</p>
+</div>
+<script>
+  (function () {
+    var campo = document.getElementById('buscar-error')
+    var vacio = document.getElementById('sin-resultados')
+    var sinAcentos = function (s) { return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase() }
+    campo.addEventListener('input', function () {
+      var q = sinAcentos(campo.value.trim())
+      var alguno = false
+      document.querySelectorAll('.grupo-errores').forEach(function (g) {
+        var enGrupo = false
+        g.querySelectorAll('.error').forEach(function (e) {
+          var ver = !q || sinAcentos(e.textContent).indexOf(q) !== -1
+          e.hidden = !ver
+          if (ver) enGrupo = true
+        })
+        g.hidden = !enGrupo
+        if (enGrupo) alguno = true
+      })
+      vacio.hidden = alguno
+    })
+  })()
+</script>
+<!-- APP-INICIO -->
+</body>
+</html>
+<!-- APP-FIN -->
