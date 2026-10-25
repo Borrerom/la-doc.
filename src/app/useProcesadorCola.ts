@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect } from 'react'
 import { procesarCola } from '../core/ai/procesar'
-import { audioAWav } from '../core/capture/audioWav'
+import { HERRAMIENTAS_NAVEGADOR } from '../core/capture/herramientas'
 import { db } from '../core/db/db'
 import { useConexion } from './useConexion'
 
@@ -15,7 +15,7 @@ export function useProcesadorCola() {
 
   useEffect(() => {
     if (!enLinea || enCola === 0) return
-    const revisar = () => void procesarCola({ convertirAudio: audioAWav })
+    const revisar = () => void procesarCola(HERRAMIENTAS_NAVEGADOR)
     revisar()
     const intervalo = setInterval(revisar, CADA_MS)
     return () => clearInterval(intervalo)

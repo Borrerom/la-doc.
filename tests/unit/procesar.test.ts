@@ -100,11 +100,30 @@ describe('procesar la cola', () => {
     expect(await db.cargas.get(c.id)).toMatchObject({ estado: 'error', intentos: 3 })
   })
 
-  it('PDF y voz solo van a Gemini', async () => {
+  it('sin Gemini, el PDF va convertido y la voz transcrita por Groq', async () => {
     await guardarProveedor('groq', { clave: 'gsk' })
-    const c = await crearCarga({ tipo: 'pdf', archivos: [new Blob(['%PDF'], { type: 'application/pdf' })], mazoId })
-    expect(await procesarCarga(c.id)).toBe('sin_proveedor')
-    expect((await db.cargas.get(c.id))?.error).toMatch(/Gemini/)
+    const pdf = await crearCarga({ tipo: 'pdf', archivos: [new Blob(['%PDF'], { type: 'application/pdf' })], mazoId })
+    expect(await procesarCarga(pdf.id)).toBe('sin_proveedor')
+    expect((await db.cargas.get(pdf.id))?.error).toMatch(/Gemini/)
+    const convertirPdf = async () => [{ texto: 'Página 1:\nAmpicilina...' }]
+    const conPdf = fetchFalso([200, groq(RESPUESTA)])
+    expect(await procesarCarga(pdf.id, { ...conPdf, convertirPdf })).toBe('listo')
+
+    const voz = await crearCarga({ tipo: 'voz', archivos: [new Blob(['x'], { type: 'audio/webm' })], mazoId })
+    const { hacerFetch, urls } = fetchFalso([200, { text: 'La ampicilina es una penicilina' }], [200, groq(RESPUESTA)])
+    expect(await procesarCarga(voz.id, { hacerFetch })).toBe('listo')
+    expect(urls[0]).toContain('/audio/transcriptions')
+    expect((await db.cargas.get(voz.id))?.transcripcion).toBe('La ampicilina es una penicilina')
+  })
+
+  it('OpenRouter usa la transcripción guardada', async () => {
+    await guardarProveedor('openrouter', { clave: 'sk-or' })
+    const voz = await crearCarga({ tipo: 'voz', archivos: [new Blob(['x'], { type: 'audio/webm' })], mazoId })
+    expect(await procesarCarga(voz.id)).toBe('sin_proveedor')
+    await db.cargas.update(voz.id, { transcripcion: 'Gentamicina' })
+    const { hacerFetch, urls } = fetchFalso([200, groq(RESPUESTA)])
+    expect(await procesarCarga(voz.id, { hacerFetch })).toBe('listo')
+    expect(urls[0]).toContain('openrouter.ai')
   })
 
   it('al revisar, cada fármaco entra al mazo con la cita del material', async () => {

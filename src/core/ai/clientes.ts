@@ -120,3 +120,30 @@ export async function pedirIA(proveedor: ProveedorIA, pedido: PedidoIA, hacerFet
   }
   return texto
 }
+
+const URL_TRANSCRIBIR_GROQ = 'https://api.groq.com/openai/v1/audio/transcriptions'
+export const MODELO_TRANSCRIBIR_GROQ = 'whisper-large-v3-turbo'
+
+// Groq pasa la nota de voz a texto con Whisper (gratis), para que cualquier proveedor la lea.
+export async function transcribirConGroq(proveedor: ProveedorIA, audio: Blob, hacerFetch: Fetch = fetch): Promise<string> {
+  const formulario = new FormData()
+  const extension = (audio.type.split('/')[1] ?? 'webm').split(';')[0]
+  formulario.append('file', audio, `nota.${extension}`)
+  formulario.append('model', MODELO_TRANSCRIBIR_GROQ)
+  formulario.append('language', 'es')
+  formulario.append('response_format', 'json')
+  let respuesta: Response
+  try {
+    respuesta = await hacerFetch(URL_TRANSCRIBIR_GROQ, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${proveedor.clave.trim()}` },
+      body: formulario,
+    })
+  } catch {
+    throw new ErrorIA('red', 'No hay conexión con el proveedor.')
+  }
+  if (!respuesta.ok) throw await errorDeRespuesta(respuesta)
+  const texto = (await respuesta.json().catch(() => null))?.text
+  if (typeof texto !== 'string' || !texto.trim()) throw new ErrorIA('respuesta', 'No se entendió la nota de voz.')
+  return texto.trim()
+}
