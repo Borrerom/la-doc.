@@ -1,9 +1,9 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
-import type { Borrador, FarmacoPropuesto } from '../../core/ai/extraer'
+import { tipoDePropuesto, type Borrador, type FarmacoPropuesto } from '../../core/ai/extraer'
 import { db } from '../../core/db/db'
 import { aprobarFarmaco, descartarFarmaco, posiblesDuplicados } from '../../core/db/revision'
-import { camposOrdenados, TIPO_FARMACO } from '../../core/db/tiposNota'
+import { camposOrdenados, listarTiposNota, nombresDeTipo } from '../../core/db/tiposNota'
 import type { Carga, Id, TipoNota } from '../../core/model/tipos'
 
 function FarmacoEnRevision({
@@ -21,17 +21,21 @@ function FarmacoEnRevision({
   const [valores, setValores] = useState<Record<Id, string>>(propuesto.valores)
   const [error, setError] = useState<string | null>(null)
   const nombre = valores[campos[0].id] ?? ''
-  const duplicados = useLiveQuery(() => posiblesDuplicados(carga.materiaId, nombre), [carga.materiaId, nombre])
+  const duplicados = useLiveQuery(() => posiblesDuplicados(carga.materiaId, nombre, tipo.id), [carga.materiaId, nombre, tipo.id])
+  const n = nombresDeTipo(tipo)
 
   return (
     <section className="tarjeta editor-nota revision" data-testid={`propuesto-${indice}`}>
+      <p className="tipo-propuesto">
+        {n.emoji} {tipo.nombre}
+      </p>
       <h2>
         {propuesto.valores[campos[0].id]}
         {propuesto.pagina && <small> · página {propuesto.pagina}</small>}
       </h2>
       {duplicados && duplicados.length > 0 && (
         <p className="aviso-duplicado">
-          Ya tienes un fármaco con este nombre en la materia. Si lo guardas, quedarán dos.
+          Ya tienes {n.uno === 'patología' ? 'una' : 'un'} {n.uno} con este nombre en la materia. Si lo guardas, quedarán dos.
         </p>
       )}
       {campos.map((c) => (
@@ -62,7 +66,7 @@ function FarmacoEnRevision({
             }
           }}
         >
-          Guardar en el mazo
+          Guardar en el tema
         </button>
         <button type="button" className="secundario peligro" onClick={() => descartarFarmaco(carga.id, indice)}>
           Descartar
@@ -72,17 +76,28 @@ function FarmacoEnRevision({
   )
 }
 
+// "2 fármacos y 1 patología".
+function contarPorTipo(propuestos: FarmacoPropuesto[], tipos: Map<Id, TipoNota>) {
+  const cuenta = new Map<Id, number>()
+  for (const p of propuestos) cuenta.set(tipoDePropuesto(p), (cuenta.get(tipoDePropuesto(p)) ?? 0) + 1)
+  const partes = [...cuenta].map(([id, k]) => {
+    const n = nombresDeTipo(tipos.get(id) ?? { id, nombre: 'nota' })
+    return `${k} ${k === 1 ? n.uno : n.varios}`
+  })
+  return partes.length > 1 ? `${partes.slice(0, -1).join(', ')} y ${partes.at(-1)}` : (partes[0] ?? 'nada')
+}
+
 export function Revisar({ cargaId }: { cargaId: Id }) {
   const datos = useLiveQuery(async () => {
     const carga = await db.cargas.get(cargaId)
-    const tipo = await db.tiposNota.get(TIPO_FARMACO)
-    return { carga, tipo }
+    const tipos = new Map((await listarTiposNota()).map((t) => [t.id, t]))
+    return { carga, tipos }
   }, [cargaId])
   if (!datos) return null
-  const { carga, tipo } = datos
+  const { carga, tipos } = datos
   const borrador = carga?.borrador as Borrador | undefined
 
-  if (!carga || carga.borrada || !borrador || !tipo) {
+  if (!carga || carga.borrada || !borrador) {
     return (
       <main>
         <a href="#/cargas" className="volver">
@@ -104,24 +119,24 @@ export function Revisar({ cargaId }: { cargaId: Id }) {
       <section className="tarjeta">
         <h2>Revisar lo que leyó la IA</h2>
         <p>
-          {borrador.proveedor} encontró {borrador.farmacos.length}{' '}
-          {borrador.farmacos.length === 1 ? 'fármaco' : 'fármacos'}. Corrige lo que haga falta y guarda cada uno: entra al
-          mazo con sus fichas y con la cita del material.
+          {borrador.proveedor} encontró {contarPorTipo(borrador.farmacos, tipos)}. Corrige lo que haga falta y guarda cada
+          uno: entra al tema con sus fichas y con la cita del material.
         </p>
         <p className="ayuda">
           Revisa sobre todo los campos sin frase del material: la IA puede equivocarse.
         </p>
       </section>
-      {pendientes.map(([f, i]) => (
-        <FarmacoEnRevision key={i} carga={carga} indice={i} propuesto={f} tipo={tipo} />
-      ))}
+      {pendientes.map(([f, i]) => {
+        const tipo = tipos.get(tipoDePropuesto(f))
+        return tipo && <FarmacoEnRevision key={i} carga={carga} indice={i} propuesto={f} tipo={tipo} />
+      })}
       {pendientes.length === 0 && (
         <section className="tarjeta">
           <p>
-            Listo. {guardados.length} {guardados.length === 1 ? 'fármaco guardado' : 'fármacos guardados'}.
+            Listo. Guardaste {guardados.length === 0 ? 'nada' : contarPorTipo(guardados, tipos)}.
           </p>
           <a className="boton" href={`#/mazo/${carga.mazoId}`}>
-            Ver el mazo
+            Ver el tema
           </a>
         </section>
       )}

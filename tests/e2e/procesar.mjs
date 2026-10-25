@@ -76,20 +76,20 @@ try {
   await p.getByText('AIza••••1234').waitFor()
   await p.goto(`http://localhost:${PUERTO}/#/cargas`)
   await contexto.setOffline(false)
-  await p.getByRole('link', { name: 'Revisar 2 fármacos' }).nth(1).waitFor({ timeout: 15000 })
+  await p.getByRole('link', { name: 'Revisar 2 pendientes' }).nth(1).waitFor({ timeout: 15000 })
 
   const mimes = pedidos.flatMap((c) => c.contents[0].parts.filter((x) => x.inline_data).map((x) => x.inline_data.mime_type))
   if (!mimes.includes('audio/wav') || !mimes.some((m) => m.startsWith('image/'))) throw new Error(`mimes: ${mimes}`)
 
   // Revisar: se corrige un dato, se guarda uno y se descarta el otro.
-  await p.getByRole('link', { name: 'Revisar 2 fármacos' }).last().click()
+  await p.getByRole('link', { name: 'Revisar 2 pendientes' }).last().click()
   await p.getByText('Del material: «grupo: penicilinas»').waitFor()
   const primero = p.getByTestId('propuesto-0')
   await primero.getByLabel('Mecanismo de acción').fill('Inhibe la síntesis de la pared bacteriana')
   await p.screenshot({ path: 'tests/e2e/revisar.png', fullPage: true })
-  await primero.getByRole('button', { name: 'Guardar en el mazo' }).click()
+  await primero.getByRole('button', { name: 'Guardar en el tema' }).click()
   await p.getByTestId('propuesto-1').getByRole('button', { name: 'Descartar' }).click()
-  await p.getByText('Listo. 1 fármaco guardado.').waitFor()
+  await p.getByText('Listo. Guardaste 1 fármaco.').waitFor()
 
   await p.goto(urlMazo)
   await p.getByText('Ampicilina', { exact: true }).click()

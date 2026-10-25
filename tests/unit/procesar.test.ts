@@ -8,9 +8,10 @@ import { db, usarBase } from '../../src/core/db/db'
 import { fuentesDeNota } from '../../src/core/db/ejemplos'
 import { crearMateria, crearMazo, crearSemestre } from '../../src/core/db/organizacion'
 import { aprobarFarmaco, descartarFarmaco } from '../../src/core/db/revision'
-import { asegurarTiposDeFabrica, tipoFarmacoDeFabrica } from '../../src/core/db/tiposNota'
+import { asegurarTiposDeFabrica, TIPO_CASO, TIPO_FARMACO, TIPO_PATOLOGIA, tipoCasoDeFabrica, tipoFarmacoDeFabrica, tipoPatologiaDeFabrica } from '../../src/core/db/tiposNota'
 
 const tipo = tipoFarmacoDeFabrica()
+const tipos = [tipo, tipoPatologiaDeFabrica(), tipoCasoDeFabrica()]
 const RESPUESTA = JSON.stringify({
   farmacos: [
     {
@@ -25,19 +26,35 @@ const RESPUESTA = JSON.stringify({
 
 describe('lo que responde la IA', () => {
   it('las instrucciones piden no inventar e incluyen los campos', () => {
-    const t = armarInstrucciones(tipo, { materia: 'Farmacología 1', tema: 'Antibióticos', tipoCarga: 'foto' })
+    const t = armarInstrucciones(tipos, { materia: 'Morfofisiopatología 2', tema: 'Cardio', tipoCarga: 'foto', principal: tipos[1] })
     expect(t).toContain('No inventes')
-    expect(t).toContain('farmaco-dosis')
-    expect(t).toContain('"Antibióticos"')
+    for (const id of ['farmaco-dosis', 'patologia-signos', 'caso-respuesta', '"tipo-caso"']) expect(t).toContain(id)
+    expect(t).toContain('"Cardio"')
+    expect(t).toContain('lo más común es: patología')
   })
 
   it('se queda con los campos conocidos y los fármacos con nombre', () => {
-    const f = interpretarRespuesta('```json\n' + RESPUESTA + '\n```', tipo)
+    const f = interpretarRespuesta('```json\n' + RESPUESTA + '\n```', tipos)
     expect(f).toHaveLength(2)
     expect(f[0].valores).toEqual({ 'farmaco-nombre': 'Ampicilina', 'farmaco-efectos': 'Diarrea\nExantema' })
     expect(f[0].evidencia['farmaco-efectos']).toBe('RAM: diarrea, exantema')
     expect(f[0].pagina).toBe(2)
-    expect(() => interpretarRespuesta('no sé', tipo)).toThrow('formato')
+    expect(f[0].tipoNotaId).toBe(TIPO_FARMACO)
+    expect(() => interpretarRespuesta('no sé', tipos)).toThrow('formato')
+  })
+
+  it('reconoce el tipo de cada nota, por id, por nombre o por sus campos', () => {
+    const respuesta = JSON.stringify({
+      notas: [
+        { tipo: 'tipo-patologia', campos: { 'patologia-nombre': 'Asma', 'farmaco-dosis': 'no es de este tipo' } },
+        { tipo: 'Caso clínico', campos: { 'caso-titulo': 'Niño de 8 años con tos' } },
+        { campos: { 'farmaco-nombre': 'Salbutamol' } },
+        { tipo: 'algo raro', campos: { 'campo-x': 'nada' } },
+      ],
+    })
+    const f = interpretarRespuesta(respuesta, tipos)
+    expect(f.map((x) => x.tipoNotaId)).toEqual([TIPO_PATOLOGIA, TIPO_CASO, TIPO_FARMACO])
+    expect(f[0].valores).toEqual({ 'patologia-nombre': 'Asma' })
   })
 })
 
@@ -124,6 +141,22 @@ describe('procesar la cola', () => {
     const { hacerFetch, urls } = fetchFalso([200, groq(RESPUESTA)])
     expect(await procesarCarga(voz.id, { hacerFetch })).toBe('listo')
     expect(urls[0]).toContain('openrouter.ai')
+  })
+
+  it('una patología y un caso del mismo material entran como su tipo', async () => {
+    await guardarProveedor('gemini', { clave: 'AIza' })
+    const c = await nuevaFoto()
+    const respuesta = JSON.stringify({
+      notas: [
+        { tipo: 'tipo-patologia', campos: { 'patologia-nombre': 'Asma', 'patologia-signos': 'Sibilancias' } },
+        { tipo: 'tipo-caso', campos: { 'caso-titulo': 'Niño de 8 años con tos', 'caso-respuesta': 'Asma' } },
+      ],
+    })
+    expect(await procesarCarga(c.id, fetchFalso([200, gemini(respuesta)]))).toBe('listo')
+    const asma = await aprobarFarmaco(c.id, 0, { 'patologia-nombre': 'Asma', 'patologia-signos': 'Sibilancias' })
+    const caso = await aprobarFarmaco(c.id, 1, { 'caso-titulo': 'Niño de 8 años con tos', 'caso-respuesta': 'Asma' })
+    expect([asma?.tipoNotaId, caso?.tipoNotaId]).toEqual([TIPO_PATOLOGIA, TIPO_CASO])
+    expect((await db.cargas.get(c.id))?.estado).toBe('aprobada')
   })
 
   it('al revisar, cada fármaco entra al mazo con la cita del material', async () => {

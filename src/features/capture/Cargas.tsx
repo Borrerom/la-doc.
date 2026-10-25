@@ -23,6 +23,7 @@ const TIPOS: Record<Carga['tipo'], string> = { foto: '📷', pdf: '📄', voz: '
 function TarjetaCarga({ carga, destino }: { carga: Carga; destino: string }) {
   const archivos = useLiveQuery(() => archivosDeCarga(carga), [carga.id, carga.archivoIds.length])
   const fecha = new Date(carga.creada).toLocaleString('es-VE', { dateStyle: 'medium', timeStyle: 'short' })
+  const pendientes = ((carga.borrador as Borrador | undefined)?.farmacos ?? []).filter((f) => f.estado === 'pendiente').length
 
   return (
     <li className="tarjeta carga" data-estado={carga.estado}>
@@ -50,8 +51,7 @@ function TarjetaCarga({ carga, destino }: { carga: Carga; destino: string }) {
       <div className="fila">
         {carga.estado === 'por_revisar' && (
           <a className="boton" href={`#/revisar/${carga.id}`}>
-            Revisar {((carga.borrador as Borrador | undefined)?.farmacos ?? []).filter((f) => f.estado === 'pendiente').length}{' '}
-            fármacos
+            Revisar {pendientes} {pendientes === 1 ? 'pendiente' : 'pendientes'}
           </a>
         )}
         {carga.estado === 'aprobada' && (

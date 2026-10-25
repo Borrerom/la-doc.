@@ -1005,3 +1005,10 @@ details.mas-opciones > .tarjeta {
   background: var(--superficie);
   color: var(--texto);
 }
+
+/* Revisión de una carga: de qué tipo es cada nota que propone la IA. */
+.tipo-propuesto {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}

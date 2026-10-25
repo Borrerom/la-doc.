@@ -32,7 +32,7 @@ function TarjetaCargas() {
       <p>
         {pendientes
           ? `${pendientes} ${pendientes === 1 ? 'carga pendiente' : 'cargas pendientes'}.`
-          : 'Fotos, PDF y notas de voz que la IA convierte en fármacos.'}
+          : 'Fotos, PDF y notas de voz que la IA convierte en fármacos, patologías o casos.'}
       </p>
     </a>
   )

@@ -111,7 +111,7 @@ export function Capturar({ mazoId }: { mazoId: string }) {
         </p>
         <p className="ayuda">
           Se guarda en el teléfono aunque no haya internet. La IA lo procesa cuando vuelva la conexión y tú revisas
-          cada fármaco antes de que entre al mazo.
+          cada fármaco, patología o caso que encuentre antes de que entre al tema.
         </p>
         <div className="selector tipos-carga" role="group" aria-label="Qué vas a cargar">
           {(
@@ -235,7 +235,7 @@ export function Capturar({ mazoId }: { mazoId: string }) {
           <span>Indicaciones para la IA (opcional)</span>
           <textarea
             rows={2}
-            placeholder="Ejemplo: solo los fármacos de la página 2"
+            placeholder="Ejemplo: solo el caso de la página 2"
             value={indicacion}
             onChange={(e) => setIndicacion(e.target.value)}
           />

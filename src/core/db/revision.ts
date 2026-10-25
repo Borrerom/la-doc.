@@ -1,5 +1,5 @@
 import { ulid } from 'ulid'
-import type { Borrador } from '../ai/extraer'
+import { tipoDePropuesto, type Borrador } from '../ai/extraer'
 import type { Carga, Fuente, Id } from '../model/tipos'
 import { db } from './db'
 import { guardarNota } from './notas'
@@ -38,12 +38,12 @@ async function cargaEnRevision(cargaId: Id) {
   return { carga, borrador }
 }
 
-// Guarda en el mazo el fármaco revisado, con la cita del material en cada dato que trajo la IA.
+// Guarda en el mazo la nota revisada (fármaco, patología o caso), con la cita del material en cada dato que trajo la IA.
 export async function aprobarFarmaco(cargaId: Id, indice: number, valores: Record<Id, string>) {
   const { carga, borrador } = await cargaEnRevision(cargaId)
   const propuesto = borrador.farmacos[indice]
   if (!propuesto || propuesto.estado !== 'pendiente') return
-  const nota = await guardarNota({ tipoNotaId: TIPO_FARMACO, mazoId: carga.mazoId, valores, etiquetas: [] })
+  const nota = await guardarNota({ tipoNotaId: tipoDePropuesto(propuesto), mazoId: carga.mazoId, valores, etiquetas: [] })
   await db.notas.update(nota.id, { cargaId })
   const fuenteId = await fuenteDeCarga(carga, borrador)
   const ahora = Date.now()
@@ -73,13 +73,13 @@ export async function descartarFarmaco(cargaId: Id, indice: number) {
   await terminarSiCorresponde(cargaId, borrador)
 }
 
-// Fármacos que ya están en la materia con el mismo nombre genérico (la primera palabra).
-export async function posiblesDuplicados(materiaId: Id, nombre: string) {
-  const tipo = await db.tiposNota.get(TIPO_FARMACO)
+// Notas del mismo tipo que ya están en la materia con el mismo nombre (la primera palabra).
+export async function posiblesDuplicados(materiaId: Id, nombre: string, tipoNotaId: Id = TIPO_FARMACO) {
+  const tipo = await db.tiposNota.get(tipoNotaId)
   if (!tipo) return []
   const campoNombre = camposOrdenados(tipo.campos)[0].id
   const clave = normalizar(nombre).split(/[\s(,/]+/)[0]
   if (!clave) return []
   const notas = await db.notas.where('materiaId').equals(materiaId).toArray()
-  return notas.filter((n) => !n.borrada && normalizar(n.valores[campoNombre] ?? '').split(/[\s(,/]+/)[0] === clave)
+  return notas.filter((n) => !n.borrada && n.tipoNotaId === tipoNotaId && normalizar(n.valores[campoNombre] ?? '').split(/[\s(,/]+/)[0] === clave)
 }
