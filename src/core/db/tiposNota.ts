@@ -1,6 +1,7 @@
 import { ulid } from 'ulid'
 import type { Campo, Id, Plantilla, TipoCampo, TipoNota } from '../model/tipos'
 import { db } from './db'
+import { sincronizarTipo } from './fichas'
 
 // Ids fijos para los tipos y campos de fábrica: así coinciden entre teléfonos y respaldos.
 export const TIPO_FARMACO = 'tipo-farmaco'
@@ -120,6 +121,7 @@ export async function cambiarTipoNota(id: Id, cambio: (tipo: TipoNota) => TipoNo
     if (!actual) throw new Error('Este tipo de ficha no existe')
     await db.tiposNota.put({ ...cambio(actual), editada: Date.now() })
   })
+  await sincronizarTipo(id)
 }
 
 export { ordenados as camposOrdenados }
