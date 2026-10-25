@@ -3,8 +3,9 @@ import { ulid } from 'ulid'
 import type { Carga, Id } from '../model/tipos'
 import { db } from './db'
 
-// Límite de lo que se manda en un solo pedido a la IA (Gemini acepta unos 20 MB).
-export const MAXIMO_MB = 18
+// Límite de lo que se manda en un solo pedido a la IA: Gemini acepta unos 20 MB y el envío
+// en base64 ocupa un tercio más.
+export const MAXIMO_MB = 14
 
 export type NuevaCarga = {
   tipo: Carga['tipo']

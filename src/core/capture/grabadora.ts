@@ -1,5 +1,5 @@
 // Graba notas de voz con el micrófono del teléfono.
-export const MINUTOS_MAXIMOS = 10
+export const MINUTOS_MAXIMOS = 5
 
 function formatoPreferido() {
   for (const tipo of ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus']) {

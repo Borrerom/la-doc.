@@ -5,6 +5,8 @@ import { pedirAlmacenamientoPersistente, type EstadoAlmacenamiento } from '../co
 import { AjustesIA } from '../features/ai/AjustesIA'
 import { Capturar } from '../features/capture/Capturar'
 import { Cargas } from '../features/capture/Cargas'
+import { Revisar } from '../features/capture/Revisar'
+import { useProcesadorCola } from './useProcesadorCola'
 import { Materia } from '../features/decks/Materia'
 import { Materias } from '../features/decks/Materias'
 import { EditorCampos } from '../features/note-types/EditorCampos'
@@ -88,6 +90,7 @@ function Inicio() {
 function App() {
   const enLinea = useConexion()
   const ruta = useRuta()
+  useProcesadorCola()
 
   return (
     <div className="app">
@@ -105,7 +108,9 @@ function App() {
         </span>
       </header>
 
-      {ruta === '/cargas' ? (
+      {ruta.startsWith('/revisar/') ? (
+        <Revisar cargaId={ruta.slice('/revisar/'.length)} />
+      ) : ruta === '/cargas' ? (
         <Cargas />
       ) : ruta.startsWith('/capturar/') ? (
         <Capturar mazoId={ruta.slice('/capturar/'.length)} />

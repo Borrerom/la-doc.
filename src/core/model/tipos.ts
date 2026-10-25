@@ -77,6 +77,8 @@ export type Fuente = Base & {
   proveedor?: string
   fechaConsulta?: number
   textoGuardado?: string
+  // Material del teléfono (fotos, PDF o voz) del que salió.
+  cargaId?: Id
 }
 
 export type Cita = Base & { notaId: Id; campoId: Id; fuenteId: Id; fragmento?: string; pagina?: number }
