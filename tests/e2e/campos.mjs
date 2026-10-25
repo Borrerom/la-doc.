@@ -21,6 +21,7 @@ try {
   await p.reload()
   await contexto.setOffline(true)
 
+  await p.getByText('⚙ Más opciones').click()
   await p.getByRole('link', { name: /Campos de la ficha de fármaco/ }).click()
   const nombres = () => p.locator('.campo-nombre').allInnerTexts()
   await p.getByText('Dosis, y ajustes por edad o peso', { exact: true }).waitFor()

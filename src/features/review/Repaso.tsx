@@ -24,13 +24,17 @@ export function Repaso() {
   const guardando = useRef(false)
   const ajustes = useAjustesAudio()
   const leer = ajustes.leerEnRepaso
+  const [errorVoz, setErrorVoz] = useState<string | null>(null)
 
   // Lectura en voz alta: la pregunta al aparecer y la respuesta al mostrarla.
   useEffect(() => {
     if (!leer || !actual) return
     callar()
     const texto = respuestaVisible ? actual.vista.reverso : actual.vista.frente
-    hablar(textoParaLeer(texto), ajustes.velocidad).catch(() => {})
+    hablar(textoParaLeer(texto), ajustes.velocidad).then(
+      () => setErrorVoz(null),
+      (e: unknown) => setErrorVoz(e instanceof Error ? e.message : String(e)),
+    )
   }, [leer, actual, respuestaVisible, ajustes.velocidad])
 
   useEffect(() => () => callar(), [])
@@ -108,6 +112,7 @@ export function Repaso() {
           >
             {leer ? '🔊' : '🔈'}
           </button>
+          {leer && errorVoz && <span className="texto-error">{errorVoz}</span>}
           {actual.item.nueva && <span className="etiqueta-nueva">Nueva</span>} Quedan {pendientes}
         </span>
       </div>
