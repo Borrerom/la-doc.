@@ -42,7 +42,9 @@ export function Materia({ id }: { id: Id }) {
           />
         ) : (
           <>
-            <span className="mazo-nombre">{nodo.nombre}</span>
+            <a className="mazo-nombre" href={`#/mazo/${nodo.id}`}>
+              {nodo.nombre}
+            </a>
             <span className="mazo-acciones">
               <button type="button" className="secundario" onClick={() => setAccion({ tipo: 'submazo', id: nodo.id })}>
                 + Sub

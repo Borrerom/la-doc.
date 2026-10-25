@@ -3,6 +3,8 @@ import { pedirAlmacenamientoPersistente, type EstadoAlmacenamiento } from '../co
 import { Materia } from '../features/decks/Materia'
 import { Materias } from '../features/decks/Materias'
 import { EditorCampos } from '../features/note-types/EditorCampos'
+import { EditorNota } from '../features/notes/EditorNota'
+import { Mazo } from '../features/notes/Mazo'
 import { PruebaAudio } from '../features/podcast/PruebaAudio'
 import { AvisoActualizacion } from './AvisoActualizacion'
 import { useConexion } from './useConexion'
@@ -66,6 +68,12 @@ function App() {
         <PruebaAudio />
       ) : ruta.startsWith('/tipo/') ? (
         <EditorCampos id={ruta.slice('/tipo/'.length)} />
+      ) : ruta.startsWith('/mazo/') ? (
+        <Mazo id={ruta.slice('/mazo/'.length)} />
+      ) : ruta.startsWith('/nota/nueva/') ? (
+        <EditorNota mazoId={ruta.slice('/nota/nueva/'.length)} />
+      ) : ruta.startsWith('/nota/') ? (
+        <EditorNota notaId={ruta.slice('/nota/'.length)} />
       ) : ruta.startsWith('/materia/') ? (
         <Materia id={ruta.slice('/materia/'.length)} />
       ) : (
