@@ -7,6 +7,8 @@ import { Capturar } from '../features/capture/Capturar'
 import { Cargas } from '../features/capture/Cargas'
 import { Revisar } from '../features/capture/Revisar'
 import { useProcesadorCola } from './useProcesadorCola'
+import { useRespaldoAutomatico } from './useRespaldoAutomatico'
+import { Respaldo, TarjetaRespaldo } from '../features/respaldo/Respaldo'
 import { Materia } from '../features/decks/Materia'
 import { AgregarSemestre, Materias } from '../features/decks/Materias'
 import { EditorCampos } from '../features/note-types/EditorCampos'
@@ -56,6 +58,8 @@ function Inicio() {
 
       <TarjetaCargas />
 
+      <TarjetaRespaldo />
+
       <details className="tarjeta mas-opciones">
         <summary>⚙ Más opciones</summary>
         <SelectorTema />
@@ -100,6 +104,7 @@ function App() {
   const enLinea = useConexion()
   const ruta = useRuta()
   useProcesadorCola()
+  useRespaldoAutomatico()
 
   return (
     <div className="app">
@@ -119,6 +124,8 @@ function App() {
 
       {ruta.startsWith('/revisar/') ? (
         <Revisar cargaId={ruta.slice('/revisar/'.length)} />
+      ) : ruta === '/respaldo' ? (
+        <Respaldo />
       ) : ruta === '/cargas' ? (
         <Cargas />
       ) : ruta.startsWith('/capturar/') ? (
