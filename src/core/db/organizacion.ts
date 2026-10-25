@@ -13,7 +13,7 @@ const limpiar = (nombre: string) => {
   return n
 }
 
-export const COLORES_MATERIA = ['#0f766e', '#7c3aed', '#c2410c', '#1d4ed8', '#be123c', '#4d7c0f']
+export const COLORES_MATERIA = ['#7c3aed', '#0f766e', '#c2410c', '#1d4ed8', '#be123c', '#4d7c0f']
 
 // --- Semestres ---
 
@@ -100,4 +100,9 @@ export function rutaDeMazo(mazos: Mazo[], id: Id): string[] {
   const ruta: string[] = []
   for (let m = porId.get(id); m; m = m.padreId ? porId.get(m.padreId) : undefined) ruta.unshift(m.nombre)
   return ruta
+}
+
+// Al pasar la app a lila (versión 0.14), las materias que tenían el verde de antes toman el lila.
+export async function materiasALila() {
+  await db.materias.filter((m) => m.color === '#0f766e').modify({ color: COLORES_MATERIA[0] })
 }

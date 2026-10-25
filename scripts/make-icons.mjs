@@ -15,7 +15,7 @@ for (const [size, name, pad] of [
   await page.setViewportSize({ width: size, height: size })
   const inner = size - pad * 2
   await page.setContent(
-    `<body style="margin:0;background:#0f766e;display:grid;place-items:center;width:${size}px;height:${size}px">` +
+    `<body style="margin:0;background:#7c3aed;display:grid;place-items:center;width:${size}px;height:${size}px">` +
       svg.replace('<svg ', `<svg width="${inner}" height="${inner}" `) +
       '</body>',
   )
