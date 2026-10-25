@@ -26,7 +26,7 @@ describe('cola de cargas', () => {
 
   it('rechaza cargas vacías o demasiado grandes', async () => {
     await expect(crearCarga({ tipo: 'foto', archivos: [], mazoId })).rejects.toThrow('No hay nada')
-    await expect(crearCarga({ tipo: 'pdf', archivos: [foto(19 * 1024 * 1024)], mazoId })).rejects.toThrow('Divide')
+    await expect(crearCarga({ tipo: 'pdf', archivos: [foto(15 * 1024 * 1024)], mazoId })).rejects.toThrow('Divide')
     expect(await listarCargas()).toEqual([])
   })
 

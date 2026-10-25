@@ -771,3 +771,24 @@ audio {
 .lista > .carga + .carga {
   margin-top: 12px;
 }
+
+.revision h2 small {
+  font-weight: 400;
+  color: var(--texto-suave);
+}
+
+.evidencia {
+  font-style: italic;
+}
+
+.sin-evidencia,
+.aviso-duplicado {
+  color: var(--alerta);
+}
+
+.aviso-duplicado,
+.aviso-clave {
+  background: var(--alerta-suave);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
