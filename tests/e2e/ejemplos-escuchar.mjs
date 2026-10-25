@@ -30,9 +30,15 @@ try {
   await p.getByLabel('Nombre del semestre').fill('Semestre 5')
   await p.getByRole('button', { name: 'Crear' }).click()
   // Farmacología 1 y sus 3 ejemplos aparecen solos al crear el semestre.
-  await p.getByRole('link', { name: 'Farmacología 1' }).click()
-  await p.getByRole('link', { name: 'Ejemplos (MedlinePlus)' }).click()
+  // Tablero: la materia se despliega con sus temas, y cada tema abre su pantalla.
+  await p.getByText('1 tema · 3 fármacos').waitFor()
+  await p.locator('summary', { hasText: 'Farmacología 1' }).click()
+  await p.screenshot({ path: 'tests/e2e/tablero.png', fullPage: true })
+  await p.getByRole('link', { name: /Ejemplos \(MedlinePlus\)/ }).click()
   await p.getByText('3 fármacos y 21 fichas, contando los submazos.').waitFor()
+  // Al volver, la materia sigue abierta.
+  await p.getByRole('link', { name: '← Inicio' }).click()
+  await p.getByRole('link', { name: /Ejemplos \(MedlinePlus\)/ }).click()
   await p.getByText('Metformina', { exact: true }).click()
   await p.getByRole('link', { name: 'Metformina: MedlinePlus medicinas' }).waitFor()
   await p.getByRole('link', { name: /ficha técnica \(CIMA, AEMPS\)/ }).first().waitFor()
@@ -42,6 +48,17 @@ try {
   await p.getByRole('button', { name: '🔊 Escuchar' }).click()
   await p.getByRole('button', { name: '■ Detener' }).waitFor()
   await p.getByRole('button', { name: '🔊 Escuchar' }).waitFor({ timeout: 15000 })
+  // Si el teléfono no empieza a leer, se avisa con la ayuda en vez de quedarse mudo.
+  await p.evaluate(() => {
+    window.hablarBien = speechSynthesis.speak
+    speechSynthesis.speak = () => {}
+  })
+  await p.getByRole('button', { name: '🔊 Escuchar' }).click()
+  await p.getByText(/no empezó a leer/).waitFor({ timeout: 10000 })
+  await p.evaluate(() => (speechSynthesis.speak = window.hablarBien))
+  // El motor de la voz neuronal viene dentro de la app y abre sin internet.
+  const motor = await p.evaluate(async () => typeof (await import(new URL('ort/ort-wasm-simd-threaded.mjs', document.baseURI).href)).default)
+  if (motor !== 'function') throw new Error('motor ONNX: ' + motor)
   await p.getByRole('link', { name: '🎧 Escuchar el mazo' }).click()
   await p.waitForFunction(() => document.querySelector('select')?.selectedOptions[0]?.textContent?.includes('Ejemplos'))
 
@@ -75,9 +92,22 @@ try {
   await p.getByRole('button', { name: /^Bien/ }).click()
   await p.getByText('Quedan', { exact: false }).waitFor()
 
+  // Colores de la pantalla: Noche cálida se aplica y se recuerda al recargar.
+  await p.goto(`http://localhost:${PUERTO}/#/`)
+  await p.getByText('⚙ Más opciones').click()
+  await p.getByLabel(/Noche cálida/).check()
+  await p.reload()
+  const fondo = await p.evaluate(() => [document.documentElement.dataset.tema, getComputedStyle(document.body).backgroundColor])
+  if (fondo[0] !== 'noche-calida' || fondo[1] !== 'rgb(23, 19, 15)') throw new Error(`tema: ${fondo}`)
+  await p.locator('summary', { hasText: 'Farmacología 1' }).waitFor()
+  await p.screenshot({ path: 'tests/e2e/noche-calida.png', fullPage: true })
+  await p.getByText('⚙ Más opciones').click()
+  await p.getByLabel(/Automático/).check()
+
   // Borrar los ejemplos de una vez.
   await p.goto(`http://localhost:${PUERTO}/#/`)
-  await p.getByRole('link', { name: 'Farmacología 1' }).click()
+  await p.locator('details.materia', { hasText: 'Farmacología 1' }).evaluate((d) => (d.open = true))
+  await p.getByRole('link', { name: '⚙ Organizar temas' }).click()
   await p.getByRole('button', { name: 'Borrar ejemplos' }).click()
   await p.getByRole('button', { name: 'Cargar 3 ejemplos' }).waitFor()
   if (await p.getByRole('link', { name: 'Ejemplos (MedlinePlus)' }).count()) throw new Error('el mazo de ejemplos sigue')

@@ -21,7 +21,17 @@ export async function descargarVozLocal(alAvanzar?: (p: Progreso) => void) {
 let sesion: Promise<piper.TtsSession> | null = null
 
 export async function sintetizar(texto: string): Promise<Pcm> {
-  sesion ??= piper.TtsSession.create({ voiceId: VOZ_LOCAL })
+  sesion ??= piper.TtsSession.create({
+    voiceId: VOZ_LOCAL,
+    wasmPaths: {
+      onnxWasm: new URL('ort/', document.baseURI).href,
+      piperData: 'https://cdn.jsdelivr.net/npm/@diffusionstudio/piper-wasm@1.0.0/build/piper_phonemize.data',
+      piperWasm: 'https://cdn.jsdelivr.net/npm/@diffusionstudio/piper-wasm@1.0.0/build/piper_phonemize.wasm',
+    },
+  }).catch((e: unknown) => {
+    sesion = null
+    throw e
+  })
   const wav = await (await sesion).predict(texto)
   return leerWav(await wav.arrayBuffer())
 }

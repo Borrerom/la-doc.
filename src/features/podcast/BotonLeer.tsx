@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { leerAjustesAudio } from '../../core/db/ajustes'
+import { useAjustesAudio } from '../../core/db/ajustes'
 import { callar, esperar, hablar } from '../../core/audio/vozTelefono'
 
 // Solo suena un botón a la vez: al tocar otro, el anterior se calla.
@@ -9,6 +9,7 @@ export function BotonLeer({ frases, etiqueta = '🔊 Escuchar' }: { frases: stri
   const [leyendo, setLeyendo] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const mio = useRef(0)
+  const { velocidad } = useAjustesAudio()
 
   useEffect(
     () => () => {
@@ -24,13 +25,12 @@ export function BotonLeer({ frases, etiqueta = '🔊 Escuchar' }: { frases: stri
       setLeyendo(false)
       return
     }
-    callar()
+    // Si sonaba otro botón, hablar() lo calla antes de empezar.
     const yo = ++turno
     mio.current = yo
     setError(null)
     setLeyendo(true)
     try {
-      const { velocidad } = await leerAjustesAudio()
       for (const f of frases) {
         if (turno !== yo) return
         await hablar(f, velocidad)

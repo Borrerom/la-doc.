@@ -26,7 +26,8 @@ try {
   await p.getByRole('button', { name: 'Crear' }).click()
   await p.getByRole('button', { name: '+ Agregar materia' }).click()
   await p.getByRole('button', { name: 'Agregar' }).click() // viene con "Farmacología 1"
-  await p.getByRole('link', { name: 'Farmacología 1' }).click()
+  await p.locator('details.materia', { hasText: 'Farmacología 1' }).evaluate((d) => (d.open = true))
+  await p.getByRole('link', { name: '⚙ Organizar temas' }).click()
 
   await p.getByLabel('Nuevo mazo (tema)').fill('Antibióticos')
   await p.getByRole('button', { name: 'Agregar' }).click()

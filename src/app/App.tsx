@@ -8,11 +8,12 @@ import { Cargas } from '../features/capture/Cargas'
 import { Revisar } from '../features/capture/Revisar'
 import { useProcesadorCola } from './useProcesadorCola'
 import { Materia } from '../features/decks/Materia'
-import { Materias } from '../features/decks/Materias'
+import { AgregarSemestre, Materias } from '../features/decks/Materias'
 import { EditorCampos } from '../features/note-types/EditorCampos'
 import { EditorNota } from '../features/notes/EditorNota'
 import { Mazo } from '../features/notes/Mazo'
 import { Escuchar } from '../features/podcast/Escuchar'
+import { SelectorTema } from '../features/ajustes/SelectorTema'
 import { PruebaAudio } from '../features/podcast/PruebaAudio'
 import { Buscar } from '../features/search/Buscar'
 import { Repaso } from '../features/review/Repaso'
@@ -55,35 +56,42 @@ function Inicio() {
 
       <TarjetaCargas />
 
-      <a className="tarjeta enlace" href="#/ajustes-ia">
-        <h2>🤖 Inteligencia artificial</h2>
-        <p>Claves gratis de Gemini, Groq y OpenRouter para llenar fichas desde fotos, PDF y voz.</p>
-      </a>
+      <details className="tarjeta mas-opciones">
+        <summary>⚙ Más opciones</summary>
+        <SelectorTema />
 
-      <a className="tarjeta enlace" href="#/tipo/tipo-farmaco">
-        <h2>Campos de la ficha de fármaco</h2>
-        <p>Agrega, renombra u oculta los datos que lleva cada fármaco.</p>
-      </a>
+        <a className="tarjeta enlace" href="#/ajustes-ia">
+          <h2>🤖 Inteligencia artificial</h2>
+          <p>Claves gratis de Gemini, Groq y OpenRouter para llenar fichas desde fotos, PDF y voz.</p>
+        </a>
 
-      <a className="tarjeta enlace" href="#/prueba-audio">
-        <h2>Prueba de audio</h2>
-        <p>Comprueba qué voz sigue sonando con la pantalla apagada.</p>
-      </a>
+        <a className="tarjeta enlace" href="#/tipo/tipo-farmaco">
+          <h2>Campos de la ficha de fármaco</h2>
+          <p>Agrega, renombra u oculta los datos que lleva cada fármaco.</p>
+        </a>
 
-      <section className="tarjeta">
-        <h2>Este teléfono</h2>
-        <ul className="datos">
-          <li>
-            Datos protegidos:{' '}
-            <strong>{almacenamiento === null ? '…' : almacenamiento.persistente ? 'sí' : 'no'}</strong>
-          </li>
-          {almacenamiento?.disponibleMB != null && (
+        <a className="tarjeta enlace" href="#/prueba-audio">
+          <h2>Prueba de audio</h2>
+          <p>Comprueba qué voz sigue sonando con la pantalla apagada.</p>
+        </a>
+
+        <AgregarSemestre />
+
+        <section className="tarjeta">
+          <h2>Este teléfono</h2>
+          <ul className="datos">
             <li>
-              Espacio para la app: <strong>{almacenamiento.disponibleMB} MB</strong>
+              Datos protegidos:{' '}
+              <strong>{almacenamiento === null ? '…' : almacenamiento.persistente ? 'sí' : 'no'}</strong>
             </li>
-          )}
-        </ul>
-      </section>
+            {almacenamiento?.disponibleMB != null && (
+              <li>
+                Espacio para la app: <strong>{almacenamiento.disponibleMB} MB</strong>
+              </li>
+            )}
+          </ul>
+        </section>
+      </details>
     </main>
   )
 }

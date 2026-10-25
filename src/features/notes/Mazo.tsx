@@ -46,8 +46,10 @@ export function Mazo({ id }: { id: Id }) {
     )
   }
 
-  const { materia, mazos, notas, tipo, totalFichas } = datos
+  const { mazos, notas, tipo, totalFichas } = datos
   const nombresMazo = new Map(mazos.map((m) => [m.id, m.nombre]))
+  const padre = mazos.find((m) => m.id === mazo.padreId)
+  const subtemas = mazos.filter((m) => m.padreId === id).sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
   const ordenadas = [...notas].sort((a, b) => tituloNota(a, tipo).localeCompare(tituloNota(b, tipo), 'es'))
 
   const cambiarVista = (v: 'fichas' | 'tabla') => {
@@ -61,9 +63,16 @@ export function Mazo({ id }: { id: Id }) {
 
   return (
     <main className={vista === 'tabla' ? 'ancho' : undefined}>
-      <a href={`#/materia/${materia.id}`} className="volver">
-        ← {materia.nombre}
-      </a>
+      {/* Se vuelve al tema de arriba o, desde un tema, al tablero del Inicio con la materia abierta. */}
+      {padre ? (
+        <a href={`#/mazo/${padre.id}`} className="volver">
+          ← {padre.nombre}
+        </a>
+      ) : (
+        <a href="#/" className="volver">
+          ← Inicio
+        </a>
+      )}
       <section className="tarjeta">
         <h2>{rutaDeMazo(mazos, id).join(' › ')}</h2>
         <p>
@@ -95,6 +104,22 @@ export function Mazo({ id }: { id: Id }) {
           )}
         </div>
       </section>
+
+      {subtemas.length > 0 && (
+        <section className="tarjeta">
+          <h2>Subtemas</h2>
+          <ul className="lista">
+            {subtemas.map((m) => (
+              <li key={m.id}>
+                <a className="fila-enlace" href={`#/mazo/${m.id}`}>
+                  <span className="tema-nombre">{m.nombre}</span>
+                  <span aria-hidden="true">›</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {vista === 'tabla' && notas.length > 0 ? (
         <TablaNotas notas={ordenadas} tipo={tipo} nombresMazo={nombresMazo} mazoActual={id} />

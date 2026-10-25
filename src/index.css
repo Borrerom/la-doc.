@@ -18,8 +18,9 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Noche: sigue al teléfono en "Automático" o se fija con el selector de colores. Gris violeta, no negro puro. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-tema]) {
     --fondo: #15121a;
     --superficie: #1f1a26;
     --texto: #ece8f2;
@@ -31,6 +32,39 @@
     --alerta: #fbbf24;
     --alerta-suave: #451a03;
   }
+}
+
+:root[data-tema='noche'] {
+  --fondo: #15121a;
+  --superficie: #1f1a26;
+  --texto: #ece8f2;
+  --texto-suave: #b0a7bd;
+  --borde: #352d40;
+  --acento: #c4b5fd;
+  --acento-suave: #3b2a5c;
+  --sobre-acento: #1c1430;
+  --alerta: #fbbf24;
+  --alerta-suave: #451a03;
+  color-scheme: dark;
+}
+
+:root[data-tema='dia'] {
+  color-scheme: light;
+}
+
+/* Noche cálida: sin tonos azules, letra crema y acento ámbar, para estudiar tarde. */
+:root[data-tema='noche-calida'] {
+  --fondo: #17130f;
+  --superficie: #211b15;
+  --texto: #f1e4cc;
+  --texto-suave: #c4b08f;
+  --borde: #3a3026;
+  --acento: #f0b46a;
+  --acento-suave: #3d2c17;
+  --sobre-acento: #1f160b;
+  --alerta: #fca5a5;
+  --alerta-suave: #3f1d1d;
+  color-scheme: dark;
 }
 
 * {
@@ -810,3 +844,109 @@ audio {
   align-items: center;
   margin-top: 8px;
 }
+
+/* Tablero del Inicio: semestres con sus materias desplegables. */
+.semestre {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.semestre > button {
+  align-self: flex-start;
+}
+
+.semestre-titulo {
+  font-size: 0.95rem;
+  color: var(--texto-suave);
+  margin: 8px 4px 0;
+}
+
+details.materia > summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  color: var(--texto);
+  list-style: none;
+  padding: 4px 0;
+}
+
+details.materia > summary::-webkit-details-marker {
+  display: none;
+}
+
+details.materia > summary::after {
+  content: '›';
+  margin-left: auto;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--acento);
+  transition: transform 0.15s;
+}
+
+details.materia[open] > summary::after {
+  transform: rotate(90deg);
+}
+
+.materia-nombre {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+details.materia > summary small {
+  flex-basis: 100%;
+  order: 3;
+  padding-left: 22px;
+  color: var(--texto-suave);
+}
+
+.fila-enlace .tema-nombre {
+  flex: 1;
+  font-weight: 500;
+}
+
+.fila-enlace small,
+.fila-enlace [aria-hidden] {
+  color: var(--texto-suave);
+}
+
+details.mas-opciones > .tarjeta {
+  margin: 12px 0 0;
+}
+
+.temas {
+  border: 0;
+  padding: 0;
+  margin: 8px 0 0;
+  display: grid;
+  gap: 8px;
+}
+
+.temas legend {
+  color: var(--texto-suave);
+  margin-bottom: 4px;
+}
+
+.tema-opcion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  border-left-width: 8px;
+}
+
+.tema-opcion span {
+  display: grid;
+}
+
+.tema-opcion small {
+  color: var(--texto-suave);
+}
+
+.tema-auto { border-left-color: #a78bfa; }
+.tema-dia { border-left-color: #ede9fe; }
+.tema-noche { border-left-color: #352d40; }
+.tema-noche-calida { border-left-color: #f0b46a; }

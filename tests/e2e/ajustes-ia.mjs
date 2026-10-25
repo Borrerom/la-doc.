@@ -21,6 +21,7 @@ try {
   await p.reload()
   await contexto.setOffline(true)
 
+  await p.getByText('⚙ Más opciones').click()
   await p.getByRole('link', { name: /Inteligencia artificial/ }).click()
   const titulos = () => p.locator('.proveedor h2').allInnerTexts()
   await p.getByText('1. Google Gemini').waitFor()
