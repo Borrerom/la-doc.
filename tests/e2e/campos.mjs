@@ -22,7 +22,7 @@ try {
   await contexto.setOffline(true)
 
   await p.getByText('⚙ Más opciones').click()
-  await p.getByRole('link', { name: /Campos de la ficha de fármaco/ }).click()
+  await p.getByRole('link', { name: /💊 Fármaco/ }).click()
   const nombres = () => p.locator('.campo-nombre').allInnerTexts()
   await p.getByText('Dosis, y ajustes por edad o peso', { exact: true }).waitFor()
   if ((await nombres()).length !== 8) throw new Error('no están los 8 campos')

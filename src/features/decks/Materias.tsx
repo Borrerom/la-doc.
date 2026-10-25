@@ -2,8 +2,10 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useState } from 'react'
 import { db } from '../../core/db/db'
 import { asegurarEjemplosIniciales } from '../../core/db/ejemplos'
+import { asegurarMateriasIniciales } from '../../core/db/materiasIniciales'
 import { crearMateria, crearMazo, crearSemestre, descendientes, listarMaterias, listarSemestres } from '../../core/db/organizacion'
-import type { Id, Materia } from '../../core/model/tipos'
+import { listarTiposNota, nombresDeTipo, TIPO_CASO, TIPO_FARMACO, TIPO_PATOLOGIA } from '../../core/db/tiposNota'
+import type { Id, Materia, TipoNota } from '../../core/model/tipos'
 import { FormularioNombre } from '../../ui/FormularioNombre'
 
 // Tablero del Inicio: cada materia es un desplegable con sus temas. Al tocar un tema se abre su
@@ -26,45 +28,78 @@ function guardarAbiertas(abiertas: Set<Id>) {
   }
 }
 
+const EJEMPLO_TEMA: Record<Id, string> = { [TIPO_FARMACO]: 'Antibióticos', [TIPO_PATOLOGIA]: 'Cardiovascular', [TIPO_CASO]: 'Casos de la semana 1' }
+
 const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`
 
+type Conteo = Map<Id, number>
+
+function sumar(a: Conteo, b: Conteo | undefined) {
+  for (const [k, v] of b ?? []) a.set(k, (a.get(k) ?? 0) + v)
+  return a
+}
+
+// "3 fármacos · 1 patología", en el orden de los tipos.
+function describir(conteo: Conteo, tipos: TipoNota[], vacio: string) {
+  const partes = tipos.filter((t) => conteo.get(t.id)).map((t) => {
+    const n = nombresDeTipo(t)
+    return plural(conteo.get(t.id)!, n.uno, n.varios)
+  })
+  return partes.length ? partes.join(' · ') : vacio
+}
+
 function MateriaDesplegable({ materia, abierta, alCambiar }: { materia: Materia; abierta: boolean; alCambiar: (a: boolean) => void }) {
-  const temas = useLiveQuery(async () => {
-    const mazos = (await db.mazos.where('materiaId').equals(materia.id).toArray()).filter((m) => !m.borrada)
+  const datos = useLiveQuery(async () => {
+    const [mazos, tipos] = await Promise.all([
+      db.mazos.where('materiaId').equals(materia.id).filter((m) => !m.borrada).toArray(),
+      listarTiposNota(),
+    ])
     const notas = await db.notas
       .where('mazoId')
       .anyOf(mazos.map((m) => m.id))
       .filter((n) => n.borrada === undefined)
       .toArray()
-    const porMazo = new Map<Id, number>()
-    for (const n of notas) porMazo.set(n.mazoId, (porMazo.get(n.mazoId) ?? 0) + 1)
-    return mazos
+    const porMazo = new Map<Id, Conteo>()
+    for (const n of notas) {
+      const c = porMazo.get(n.mazoId) ?? new Map()
+      c.set(n.tipoNotaId, (c.get(n.tipoNotaId) ?? 0) + 1)
+      porMazo.set(n.mazoId, c)
+    }
+    const temas = mazos
       .filter((m) => !m.padreId)
       .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
       .map((m) => {
         const subtemas = descendientes(mazos, m.id)
-        const total = [m, ...subtemas].reduce((s, x) => s + (porMazo.get(x.id) ?? 0), 0)
-        return { id: m.id, nombre: m.nombre, notas: total, subtemas: subtemas.length }
+        const conteo = [m, ...subtemas].reduce((c, x) => sumar(c, porMazo.get(x.id)), new Map() as Conteo)
+        return { id: m.id, nombre: m.nombre, conteo, subtemas: subtemas.length }
       })
+    const total = temas.reduce((c, t) => sumar(c, t.conteo), new Map() as Conteo)
+    return { temas, tipos, total }
   }, [materia.id])
+  const temas = datos?.temas
   const [agregando, setAgregando] = useState(false)
-  const totalNotas = temas?.reduce((s, t) => s + t.notas, 0) ?? 0
 
   return (
     <details className="tarjeta materia" open={abierta} onToggle={(e) => alCambiar(e.currentTarget.open)}>
       <summary>
         <span className="punto" style={{ background: materia.color }} />
         <span className="materia-nombre">{materia.nombre}</span>
-        {temas && <small>{plural(temas.length, 'tema', 'temas')} · {plural(totalNotas, 'fármaco', 'fármacos')}</small>}
+        {datos && (
+          <small>
+            {datos.temas.length === 0
+              ? 'Sin temas todavía'
+              : `${plural(datos.temas.length, 'tema', 'temas')} · ${describir(datos.total, datos.tipos, 'vacía')}`}
+          </small>
+        )}
       </summary>
-      {temas?.length === 0 && <p>Todavía no hay temas. Crea el primero, por ejemplo "Antibióticos".</p>}
+      {temas?.length === 0 && <p>Todavía no hay temas. Crea el primero, por ejemplo "{EJEMPLO_TEMA[materia.tipoPrincipal ?? ''] ?? 'Unidad 1'}".</p>}
       <ul className="lista">
         {temas?.map((t) => (
           <li key={t.id}>
             <a className="fila-enlace" href={`#/mazo/${t.id}`}>
               <span className="tema-nombre">{t.nombre}</span>
               <small>
-                {plural(t.notas, 'fármaco', 'fármacos')}
+                {describir(t.conteo, datos!.tipos, 'vacío')}
                 {t.subtemas > 0 && ` · ${plural(t.subtemas, 'subtema', 'subtemas')}`}
               </small>
               <span aria-hidden="true">›</span>
@@ -104,7 +139,8 @@ export function Materias() {
   const haySemestre = (semestres?.length ?? 0) > 0
 
   useEffect(() => {
-    if (haySemestre) void asegurarEjemplosIniciales()
+    // Primero Farmacología con sus ejemplos y después las otras materias, para no duplicarla.
+    if (haySemestre) void asegurarEjemplosIniciales().then(asegurarMateriasIniciales)
   }, [haySemestre])
 
   if (!semestres || !materias) return null

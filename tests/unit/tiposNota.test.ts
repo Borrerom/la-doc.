@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { usarBase } from '../../src/core/db/db'
 import {
   CAMPO_NOMBRE_FARMACO,
+  CAMPO_NOMBRE_PATOLOGIA,
   agregarCampo,
   asegurarTiposDeFabrica,
   camposOrdenados,
@@ -24,7 +25,7 @@ describe('tipo de nota Fármaco', () => {
     await asegurarTiposDeFabrica()
     await asegurarTiposDeFabrica()
     const tipos = await listarTiposNota()
-    expect(tipos).toHaveLength(1)
+    expect(tipos.map((t) => t.nombre)).toEqual(['Fármaco', 'Patología', 'Caso clínico'])
     expect(tipos[0].campos.map((c) => c.nombre)).toEqual([
       'Nombre genérico y comercial',
       'Grupo o familia',
@@ -36,6 +37,26 @@ describe('tipo de nota Fármaco', () => {
       'Dosis, y ajustes por edad o peso',
     ])
     expect(tipos[0].plantillas).toHaveLength(7)
+  })
+
+  it('la patología trae los 8 campos del brief y el caso se repasa entero', async () => {
+    await asegurarTiposDeFabrica()
+    const [, patologia, caso] = await listarTiposNota()
+    expect(patologia.campos.map((c) => c.nombre)).toEqual([
+      'Nombre',
+      'Definición breve',
+      'Causas y factores de riesgo',
+      'Fisiopatología',
+      'Signos y síntomas',
+      'Diagnóstico: exámenes y hallazgos',
+      'Tratamiento',
+      'Complicaciones',
+    ])
+    expect(textoPlantilla(patologia.plantillas[0].frente, patologia, { [CAMPO_NOMBRE_PATOLOGIA]: 'Asma' })).toBe('Definición breve de Asma')
+    expect(caso.plantillas).toHaveLength(1)
+    const valores = { 'caso-titulo': 'Mujer de 58 años', 'caso-paciente': '58 años, 70 kg', 'caso-respuesta': 'Hipertensión' }
+    expect(textoPlantilla(caso.plantillas[0].frente, caso, valores)).toContain('Datos del paciente: 58 años, 70 kg')
+    expect(textoPlantilla(caso.plantillas[0].reverso, caso, valores)).toBe('Hipertensión')
   })
 
   it('renombrar un campo cambia la pregunta sin perder el valor', () => {

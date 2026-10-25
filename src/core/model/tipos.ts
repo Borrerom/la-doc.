@@ -15,7 +15,8 @@ export type Base = {
 
 export type Semestre = Base & { nombre: string; orden: number }
 
-export type Materia = Base & { nombre: string; semestreId: Id; color: string }
+// tipoPrincipal: el tipo de nota que más se carga en la materia (sale primero al crear).
+export type Materia = Base & { nombre: string; semestreId: Id; color: string; tipoPrincipal?: Id }
 
 export type Mazo = Base & { nombre: string; materiaId: Id; padreId: Id | null; orden: number }
 

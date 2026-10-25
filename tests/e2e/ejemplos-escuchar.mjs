@@ -35,7 +35,7 @@ try {
   await p.locator('summary', { hasText: 'Farmacología 1' }).click()
   await p.screenshot({ path: 'tests/e2e/tablero.png', fullPage: true })
   await p.getByRole('link', { name: /Ejemplos \(MedlinePlus\)/ }).click()
-  await p.getByText('3 fármacos y 21 fichas, contando los submazos.').waitFor()
+  await p.getByText('3 fármacos y 21 fichas, contando los subtemas.').waitFor()
   // Al volver, la materia sigue abierta.
   await p.getByRole('link', { name: '← Inicio' }).click()
   await p.getByRole('link', { name: /Ejemplos \(MedlinePlus\)/ }).click()

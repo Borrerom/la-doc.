@@ -6,11 +6,36 @@ import {
   cambiarCampo,
   camposOrdenados,
   cambiarTipoNota,
+  listarTiposNota,
   moverCampo,
+  nombresDeTipo,
   textoPlantilla,
 } from '../../core/db/tiposNota'
 import type { Campo, Id, TipoNota } from '../../core/model/tipos'
 import { FormularioNombre } from '../../ui/FormularioNombre'
+
+// Tarjeta de Más opciones: un acceso a los campos de cada tipo de ficha.
+export function CamposDeTipos() {
+  const tipos = useLiveQuery(listarTiposNota)
+  return (
+    <section className="tarjeta">
+      <h2>Campos de las fichas</h2>
+      <p>Agrega, renombra u oculta los datos que lleva cada tipo.</p>
+      <ul className="lista">
+        {tipos?.map((t) => (
+          <li key={t.id}>
+            <a className="fila-enlace" href={`#/tipo/${t.id}`}>
+              <span className="tema-nombre">
+                {nombresDeTipo(t).emoji} {t.nombre}
+              </span>
+              <span aria-hidden="true">›</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
 
 export function EditorCampos({ id }: { id: Id }) {
   const tipo = useLiveQuery(() => db.tiposNota.get(id), [id])

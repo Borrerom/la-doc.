@@ -3,14 +3,14 @@ import { useState, type FormEvent } from 'react'
 import { db } from '../../core/db/db'
 import { fichasDeNota, verFicha } from '../../core/db/fichas'
 import { borrarNota, guardarNota, limpiarEtiquetas } from '../../core/db/notas'
-import { TIPO_FARMACO, camposOrdenados } from '../../core/db/tiposNota'
+import { TIPO_FARMACO, camposOrdenados, nombresDeTipo } from '../../core/db/tiposNota'
 import type { Id } from '../../core/model/tipos'
 import { Fuentes } from './Fuentes'
 
 // Crea una nota nueva en un mazo (notaId vacío) o edita una existente.
-export function EditorNota({ notaId, mazoId }: { notaId?: Id; mazoId?: Id }) {
+export function EditorNota({ notaId, mazoId, tipoId }: { notaId?: Id; mazoId?: Id; tipoId?: Id }) {
   const nota = useLiveQuery(async () => (notaId ? ((await db.notas.get(notaId)) ?? null) : null), [notaId])
-  const tipo = useLiveQuery(() => db.tiposNota.get(nota?.tipoNotaId ?? TIPO_FARMACO), [nota?.tipoNotaId])
+  const tipo = useLiveQuery(() => db.tiposNota.get(nota?.tipoNotaId ?? tipoId ?? TIPO_FARMACO), [nota?.tipoNotaId, tipoId])
 
   if (nota === undefined || tipo === undefined) return null
   if ((notaId && !nota) || !tipo) {
@@ -24,7 +24,7 @@ export function EditorNota({ notaId, mazoId }: { notaId?: Id; mazoId?: Id }) {
     )
   }
   const destino = nota?.mazoId ?? mazoId!
-  return <Formulario key={nota?.id ?? 'nueva'} notaId={nota?.id} mazoId={destino} tipoId={tipo.id} valoresIniciales={nota?.valores ?? {}} etiquetasIniciales={nota?.etiquetas ?? []} />
+  return <Formulario key={nota?.id ?? `nueva-${tipo.id}`} notaId={nota?.id} mazoId={destino} tipoId={tipo.id} valoresIniciales={nota?.valores ?? {}} etiquetasIniciales={nota?.etiquetas ?? []} />
 }
 
 function Formulario(props: {
@@ -65,7 +65,7 @@ function Formulario(props: {
         ← Volver al mazo
       </a>
       <form className="tarjeta editor-nota" onSubmit={guardar}>
-        <h2>{props.notaId ? 'Editar' : 'Nuevo'} {tipo.nombre.toLowerCase()}</h2>
+        <h2>{props.notaId ? `Editar ${nombresDeTipo(tipo).uno}` : nombresDeTipo(tipo).nuevo}</h2>
         {props.notaId && <Fuentes notaId={props.notaId} />}
         {campos.map((c, i) => (
           <label key={c.id}>
@@ -136,7 +136,7 @@ function FichasDeLaNota({ notaId }: { notaId: Id }) {
   return (
     <section className="tarjeta">
       <h2>Fichas de repaso ({datos.length})</h2>
-      <p>Salen solas de los campos con contenido. Se actualizan cuando editas el fármaco.</p>
+      <p>Salen solas de los campos con contenido. Se actualizan cuando editas la nota.</p>
       <ol className="lista-fichas">
         {datos.map((f) => (
           <li key={f.id}>
