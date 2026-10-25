@@ -96,7 +96,7 @@ describe('procesar la cola', () => {
   it('tras 3 fallos queda en error', async () => {
     await guardarProveedor('gemini', { clave: 'AIza' })
     const c = await nuevaFoto()
-    for (let i = 0; i < 3; i++) await procesarCarga(c.id, fetchFalso([500, 'mal']))
+    for (let i = 0; i < 3; i++) await procesarCarga(c.id, { ...fetchFalso([500, 'mal']), esperar: async () => {} })
     expect(await db.cargas.get(c.id)).toMatchObject({ estado: 'error', intentos: 3 })
   })
 

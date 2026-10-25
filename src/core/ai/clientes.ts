@@ -10,7 +10,7 @@ export type PedidoIA = {
   json?: boolean
 }
 
-export type TipoErrorIA = 'clave' | 'cuota' | 'red' | 'respuesta' | 'modelo' | 'otro'
+export type TipoErrorIA = 'clave' | 'cuota' | 'red' | 'respuesta' | 'modelo' | 'saturado' | 'otro'
 
 export class ErrorIA extends Error {
   tipo: TipoErrorIA
@@ -70,8 +70,22 @@ function segundosDeEspera(respuesta: Response): number | undefined {
   return Number.isFinite(s) && s > 0 ? s * 1000 : undefined
 }
 
-async function errorDeRespuesta(respuesta: Response): Promise<ErrorIA> {
+// Lo que el proveedor explicó del error, corto, para poder mandarlo en una captura.
+function detalleDelError(texto: string): string {
+  let mensaje = texto
+  try {
+    const datos = JSON.parse(texto)
+    mensaje = datos?.error?.message ?? (typeof datos?.error === 'string' ? datos.error : texto)
+  } catch {
+    // No era JSON: se usa el texto tal cual.
+  }
+  mensaje = String(mensaje).replace(/\s+/g, ' ').trim()
+  return mensaje ? ` Detalle: "${mensaje.slice(0, 160)}"` : ''
+}
+
+async function errorDeRespuesta(respuesta: Response, servicio = 'El servicio de IA'): Promise<ErrorIA> {
   const texto = await respuesta.text().catch(() => '')
+  const detalle = detalleDelError(texto)
   if (respuesta.status === 429) {
     return new ErrorIA('cuota', 'Se acabó la cuota gratis por ahora.', segundosDeEspera(respuesta))
   }
@@ -79,10 +93,17 @@ async function errorDeRespuesta(respuesta: Response): Promise<ErrorIA> {
   if (respuesta.status === 404 || (respuesta.status === 400 && /model.*(not found|not supported|no longer|deprecated)/i.test(texto))) {
     return new ErrorIA('modelo', 'Ese modelo ya no está disponible. Cambia el modelo en Ajustes de IA.')
   }
+  // 500/502/503/504: el servicio está sobrecargado o caído un rato. No es culpa de la clave.
+  if (respuesta.status >= 500) {
+    return new ErrorIA(
+      'saturado',
+      `${servicio} está saturado ahora mismo (error ${respuesta.status}). No es tu clave: intenta de nuevo en unos minutos.${detalle}`,
+    )
+  }
   if (respuesta.status === 401 || respuesta.status === 403 || /api[_ ]?key/i.test(texto)) {
     return new ErrorIA('clave', 'La clave no es válida o no tiene permiso.')
   }
-  return new ErrorIA('otro', `El proveedor respondió con un error (${respuesta.status}).`)
+  return new ErrorIA('otro', `El proveedor respondió con un error (${respuesta.status}).${detalle}`)
 }
 
 // Manda un pedido a un proveedor y devuelve el texto de la respuesta.
@@ -112,7 +133,7 @@ export async function pedirIA(proveedor: ProveedorIA, pedido: PedidoIA, hacerFet
     throw new ErrorIA('red', 'No hay conexión con el proveedor.')
   }
 
-  if (!respuesta.ok) throw await errorDeRespuesta(respuesta)
+  if (!respuesta.ok) throw await errorDeRespuesta(respuesta, proveedor.id === 'gemini' ? 'Google' : undefined)
 
   const datos = await respuesta.json().catch(() => null)
   const texto =
