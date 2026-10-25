@@ -28,10 +28,10 @@ export default defineConfig({
     motorOnnx,
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png'],
+      includeAssets: ['favicon.png', 'icons/apple-touch-icon.png'],
       manifest: {
-        name: 'La Doc',
-        short_name: 'La Doc',
+        name: 'Doc Desi',
+        short_name: 'Doc Desi',
         description: 'Estudio de medicina con repaso espaciado, funciona sin internet.',
         lang: 'es',
         start_url: './',

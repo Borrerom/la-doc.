@@ -78,7 +78,7 @@ try {
   await p.getByRole('button', { name: 'Preparar el teléfono para otra persona' }).click()
   await p.getByText(/el teléfono quedó vacío/).waitFor()
   await p.getByRole('link', { name: '← Inicio' }).click()
-  await p.getByText('Bienvenida a La Doc').waitFor()
+  await p.getByText('Bienvenida a Doc Desi').waitFor()
 
   // Desi vuelve a entrar y recupera su respaldo.
   await p.goto(`http://localhost:${PUERTO}/#/respaldo`)

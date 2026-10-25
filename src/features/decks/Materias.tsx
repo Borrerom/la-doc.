@@ -148,7 +148,7 @@ export function Materias() {
   if (semestres.length === 0) {
     return (
       <section className="tarjeta">
-        <h2>Bienvenida a La Doc</h2>
+        <h2>Bienvenida a Doc Desi</h2>
         <p>Para empezar, dime en qué semestre estás. Por ejemplo: "Semestre 5".</p>
         <FormularioNombre etiqueta="Nombre del semestre" boton="Crear" alGuardar={crearSemestre} />
       </section>

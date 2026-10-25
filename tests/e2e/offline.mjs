@@ -32,7 +32,7 @@ try {
 
   await contexto.setOffline(true)
   await pagina.reload()
-  await pagina.getByRole('heading', { name: 'La Doc', exact: true }).waitFor({ timeout: 5000 })
+  await pagina.getByRole('heading', { name: 'Doc Desi', exact: true }).waitFor({ timeout: 5000 })
   const estado = await pagina.getByTestId('conexion').textContent()
   if (estado !== 'Sin internet') throw new Error(`indicador de conexión dice "${estado}"`)
   await pagina.screenshot({ path: 'tests/e2e/offline.png' })

@@ -112,7 +112,10 @@ function App() {
     <div className="app">
       <header className="barra">
         <h1>
-          <a href="#/">La Doc</a>
+          <a href="#/">
+            <img className="logo" src="icons/icon-192.png" alt="" width="36" height="36" />
+            Doc Desi
+          </a>
         </h1>
         <span className="barra-derecha">
           <a href="#/buscar" className="boton-buscar" aria-label="Buscar">

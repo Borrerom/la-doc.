@@ -87,7 +87,7 @@ export function Escuchar({ mazoId }: { mazoId?: string }) {
         pistas.push({ titulo: f.titulo, audio: frente }, { titulo: `Respuesta: ${f.titulo}`, audio: reverso })
       }
       setPreparando(null)
-      const lista = manual ? pistas : [{ titulo: `La Doc · ${fichas.length} fichas`, audio: unirWav(partes) }]
+      const lista = manual ? pistas : [{ titulo: `Doc Desi · ${fichas.length} fichas`, audio: unirWav(partes) }]
       setSesion({ fichas, inicios, manual })
       reproductor.current = new Reproductor(lista, manual, setEstado)
       await reproductor.current.empezar()
