@@ -45,14 +45,15 @@ function Inicio() {
   return (
     <main>
       <ResumenRepaso />
+
+      <a className="tarjeta enlace destacada" href="#/escuchar">
+        <h2>🎧 Escuchar mis fichas</h2>
+        <p>Tus fichas en voz alta, como un podcast, incluso con la pantalla apagada.</p>
+      </a>
+
       <Materias />
 
       <TarjetaCargas />
-
-      <a className="tarjeta enlace" href="#/escuchar">
-        <h2>🎧 Modo escuchar</h2>
-        <p>Tus fichas en audio, como un podcast, incluso con la pantalla apagada.</p>
-      </a>
 
       <a className="tarjeta enlace" href="#/ajustes-ia">
         <h2>🤖 Inteligencia artificial</h2>
@@ -117,7 +118,9 @@ function App() {
       ) : ruta === '/ajustes-ia' ? (
         <AjustesIA />
       ) : ruta === '/escuchar' ? (
-        <Escuchar />
+        <Escuchar key="hoy" />
+      ) : ruta.startsWith('/escuchar/') ? (
+        <Escuchar key={ruta} mazoId={ruta.slice('/escuchar/'.length)} />
       ) : ruta === '/buscar' ? (
         <Buscar />
       ) : ruta === '/repaso' ? (

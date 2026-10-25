@@ -19,7 +19,7 @@ type Sesion = {
   manual: boolean
 }
 
-export function Escuchar() {
+export function Escuchar({ mazoId }: { mazoId?: string }) {
   const ajustes = useAjustesAudio()
   const mazos = useLiveQuery(async () => {
     const todos = (await db.mazos.toArray()).filter((m) => !m.borrada)
@@ -28,7 +28,7 @@ export function Escuchar() {
       .map((m) => ({ id: m.id, nombre: `${materias.get(m.materiaId) ?? ''} › ${rutaDeMazo(todos, m.id).join(' › ')}` }))
       .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
   })
-  const [origen, setOrigen] = useState<'hoy' | string>('hoy')
+  const [origen, setOrigen] = useState<'hoy' | string>(mazoId ?? 'hoy')
   const [vozLista, setVozLista] = useState<boolean | null>(null)
   const [descarga, setDescarga] = useState<Progreso | null>(null)
   const [preparando, setPreparando] = useState<string | null>(null)
