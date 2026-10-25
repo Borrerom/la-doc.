@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState, type FormEvent } from 'react'
 import { db } from '../../core/db/db'
+import { fichasDeNota, verFicha } from '../../core/db/fichas'
 import { borrarNota, guardarNota, limpiarEtiquetas } from '../../core/db/notas'
 import { TIPO_FARMACO, camposOrdenados } from '../../core/db/tiposNota'
 import type { Id } from '../../core/model/tipos'
@@ -85,6 +86,10 @@ function Formulario(props: {
             )}
           </label>
         ))}
+        <p className="ayuda">
+          Para una ficha de completar, encierra lo que quieres ocultar así: {'{{c1::gluconeogénesis}}'}. Usa c2, c3… para
+          más espacios en blanco.
+        </p>
         <label>
           <span>
             Etiquetas <small>· separadas por coma, por ejemplo: hipertensión, embarazo</small>
@@ -113,6 +118,31 @@ function Formulario(props: {
           )}
         </div>
       </form>
+      {props.notaId && <FichasDeLaNota notaId={props.notaId} />}
     </main>
+  )
+}
+
+function FichasDeLaNota({ notaId }: { notaId: Id }) {
+  const datos = useLiveQuery(async () => {
+    const nota = await db.notas.get(notaId)
+    const tipo = nota && (await db.tiposNota.get(nota.tipoNotaId))
+    if (!nota || !tipo) return null
+    return (await fichasDeNota(notaId)).map((f) => ({ id: f.id, ...verFicha(f, nota, tipo) }))
+  }, [notaId])
+  if (!datos) return null
+  return (
+    <section className="tarjeta">
+      <h2>Fichas de repaso ({datos.length})</h2>
+      <p>Salen solas de los campos con contenido. Se actualizan cuando editas el fármaco.</p>
+      <ol className="lista-fichas">
+        {datos.map((f) => (
+          <li key={f.id}>
+            <div className="frente">{f.frente}</div>
+            <div className="reverso">{f.reverso}</div>
+          </li>
+        ))}
+      </ol>
+    </section>
   )
 }

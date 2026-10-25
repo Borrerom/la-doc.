@@ -1,6 +1,7 @@
 import { ulid } from 'ulid'
 import type { Id, Nota, TipoNota } from '../model/tipos'
 import { db } from './db'
+import { sincronizarFichas } from './fichas'
 import { descendientes, listarMazos } from './organizacion'
 import { camposOrdenados } from './tiposNota'
 
@@ -61,12 +62,14 @@ export async function guardarNota(datos: {
     editada: ahora,
   }
   await db.notas.put(nota)
+  await sincronizarFichas(nota.id)
   return nota
 }
 
 export async function borrarNota(id: Id) {
   const ahora = Date.now()
   await db.notas.update(id, { borrada: ahora, editada: ahora })
+  await sincronizarFichas(id)
 }
 
 // Notas del mazo y de todos sus submazos.

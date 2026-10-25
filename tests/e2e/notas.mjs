@@ -51,7 +51,7 @@ try {
   await cargar('Antibióticos', 'Azitromicina', 'Macrólidos', 'Insuficiencia hepática grave')
 
   // Vista fichas del mazo padre: ve las 3, incluida la del submazo.
-  await p.getByText('3 fármacos, contando los submazos.').waitFor()
+  await p.getByText('3 fármacos y 6 fichas, contando los submazos.').waitFor()
   await p.getByText('Ceftriaxona', { exact: true }).click()
   await p.getByText('Neonatos con hiperbilirrubinemia').waitFor()
 
@@ -78,7 +78,20 @@ try {
   await p.getByRole('button', { name: 'Fichas' }).click()
   await p.getByText('Azitromicina (Zithromax)', { exact: true }).waitFor({ timeout: 5000 })
   await p.screenshot({ path: 'tests/e2e/notas-fichas.png', fullPage: true })
-  console.log('OK: fármacos cargados a mano, vistos como fichas y como tabla, sin internet')
+
+  // Paso 6: fichas generadas desde el fármaco, incluida una de completar.
+  await p.getByText('Ceftriaxona', { exact: true }).click()
+  await p.locator('details[open]').getByRole('link', { name: 'Editar' }).click()
+  await p.getByText('Fichas de repaso (2)').waitFor()
+  await p.getByLabel('Mecanismo de acción').fill('Inhibe la síntesis de la {{c1::pared bacteriana}}')
+  await p.getByRole('button', { name: 'Guardar' }).click()
+  await p.waitForURL(/#\/mazo\//)
+  await p.getByText('3 fármacos y 8 fichas, contando los submazos.').waitFor()
+  await p.goBack()
+  await p.getByText('Fichas de repaso (4)').waitFor()
+  await p.getByText('Mecanismo de acción: Inhibe la síntesis de la […]', { exact: true }).waitFor()
+  await p.screenshot({ path: 'tests/e2e/fichas.png', fullPage: true })
+  console.log('OK: fármacos cargados a mano, vistos como fichas y como tabla, y sus fichas de repaso, sin internet')
 } catch (e) {
   fallo = e
 } finally {

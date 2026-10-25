@@ -28,7 +28,8 @@ export function Mazo({ id }: { id: Id }) {
       notasDeMazo(id),
       db.tiposNota.get(TIPO_FARMACO),
     ])
-    return { materia, mazos, notas, tipo }
+    const fichas = await db.fichas.where('notaId').anyOf(notas.map((n) => n.id)).filter((f) => !f.suspendida).toArray()
+    return { materia, mazos, notas, tipo, totalFichas: fichas.length }
   }, [id])
   const [vista, setVista] = useState(leerVista)
 
@@ -44,7 +45,7 @@ export function Mazo({ id }: { id: Id }) {
     )
   }
 
-  const { materia, mazos, notas, tipo } = datos
+  const { materia, mazos, notas, tipo, totalFichas } = datos
   const nombresMazo = new Map(mazos.map((m) => [m.id, m.nombre]))
   const ordenadas = [...notas].sort((a, b) => tituloNota(a, tipo).localeCompare(tituloNota(b, tipo), 'es'))
 
@@ -67,7 +68,7 @@ export function Mazo({ id }: { id: Id }) {
         <p>
           {notas.length === 0
             ? 'Todavía no hay fármacos en este mazo.'
-            : `${notas.length} ${notas.length === 1 ? 'fármaco' : 'fármacos'}, contando los submazos.`}
+            : `${notas.length} ${notas.length === 1 ? 'fármaco' : 'fármacos'} y ${totalFichas} ${totalFichas === 1 ? 'ficha' : 'fichas'}, contando los submazos.`}
         </p>
         <div className="fila">
           <a className="boton" href={`#/nota/nueva/${id}`}>
