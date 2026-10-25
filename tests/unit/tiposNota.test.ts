@@ -6,6 +6,7 @@ import {
   agregarCampo,
   asegurarTiposDeFabrica,
   camposOrdenados,
+  cambiarTipoNota,
   cambiarCampo,
   listarTiposNota,
   moverCampo,
@@ -46,6 +47,17 @@ describe('tipo de nota Fármaco', () => {
     tipo = cambiarCampo(tipo, 'farmaco-contraindicaciones', { nombre: 'Cuándo NO usar' })
     expect(textoPlantilla(plantilla.frente, tipo, valores)).toBe('Cuándo NO usar de Metformina')
     expect(textoPlantilla(plantilla.reverso, tipo, valores)).toBe('Insuficiencia renal grave')
+  })
+
+  it('dos cambios seguidos no se pisan', async () => {
+    await asegurarTiposDeFabrica()
+    await Promise.all([
+      cambiarTipoNota('tipo-farmaco', (t) => cambiarCampo(t, 'farmaco-mecanismo', { oculto: true })),
+      cambiarTipoNota('tipo-farmaco', (t) => moverCampo(t, 'farmaco-dosis', -1)),
+    ])
+    const [tipo] = await listarTiposNota()
+    expect(tipo.campos.find((c) => c.id === 'farmaco-mecanismo')!.oculto).toBe(true)
+    expect(camposOrdenados(tipo.campos).at(-1)!.id).toBe('farmaco-interacciones')
   })
 
   it('agrega un campo nuevo con su pregunta y rechaza duplicados', () => {

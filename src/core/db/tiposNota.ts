@@ -112,8 +112,14 @@ export function moverCampo(tipo: TipoNota, campoId: Id, direccion: -1 | 1): Tipo
   return { ...tipo, campos: lista.map((c, k) => ({ ...c, orden: k + 1 })) }
 }
 
-export async function guardarTipoNota(tipo: TipoNota) {
-  await db.tiposNota.put({ ...tipo, editada: Date.now() })
+// Aplica un cambio sobre la versión guardada (no sobre la que muestra la pantalla),
+// para que dos toques seguidos no se pisen.
+export async function cambiarTipoNota(id: Id, cambio: (tipo: TipoNota) => TipoNota) {
+  await db.transaction('rw', db.tiposNota, async () => {
+    const actual = await db.tiposNota.get(id)
+    if (!actual) throw new Error('Este tipo de ficha no existe')
+    await db.tiposNota.put({ ...cambio(actual), editada: Date.now() })
+  })
 }
 
 export { ordenados as camposOrdenados }

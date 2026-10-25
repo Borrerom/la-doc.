@@ -5,7 +5,7 @@ import {
   agregarCampo,
   cambiarCampo,
   camposOrdenados,
-  guardarTipoNota,
+  cambiarTipoNota,
   moverCampo,
   textoPlantilla,
 } from '../../core/db/tiposNota'
@@ -33,7 +33,7 @@ export function EditorCampos({ id }: { id: Id }) {
 
   async function aplicar(cambio: (t: TipoNota) => TipoNota) {
     try {
-      await guardarTipoNota(cambio(tipo!))
+      await cambiarTipoNota(id, cambio)
       setError(null)
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))

@@ -37,7 +37,9 @@ try {
   await p.getByText('Pregunta: Cuándo no usar de [Nombre genérico y comercial]').waitFor()
 
   await p.locator('.campo', { hasText: 'Mecanismo de acción' }).getByRole('button', { name: 'Ocultar' }).click()
+  await p.getByText('Mecanismo de acción (oculto)').waitFor()
   await p.getByRole('button', { name: 'Subir Uso en embarazo' }).click()
+  await p.waitForFunction(() => [...document.querySelectorAll('.campo-nombre')].at(-2)?.textContent === 'Uso en embarazo')
 
   await p.reload()
   await p.getByText('Mecanismo de acción (oculto)').waitFor({ timeout: 5000 })
