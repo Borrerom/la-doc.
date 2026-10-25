@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { asegurarEjemplosIniciales } from '../../core/db/ejemplos'
 import { crearMateria, crearSemestre, listarMaterias, listarSemestres } from '../../core/db/organizacion'
 import { FormularioNombre } from '../../ui/FormularioNombre'
 
@@ -7,6 +8,11 @@ export function Materias() {
   const semestres = useLiveQuery(listarSemestres)
   const materias = useLiveQuery(listarMaterias)
   const [agregandoEn, setAgregandoEn] = useState<string | null>(null)
+  const haySemestre = (semestres?.length ?? 0) > 0
+
+  useEffect(() => {
+    if (haySemestre) void asegurarEjemplosIniciales()
+  }, [haySemestre])
 
   if (!semestres || !materias) return null
 
