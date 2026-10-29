@@ -262,3 +262,8 @@ Una app en el teléfono de su hija, que funcione sin internet, donde ella cargue
 ## Nombre visible y logo (v0.23.0)
 - Manuel decidió (2026-10-25) que la app se **muestra** como «Doc Desi»: manifest (name/short_name), título, cabecera, manual y textos visibles. Todo lo demás sigue igual: repo `la-doc.`, URL, claves `la-doc:` de localStorage, base local, carpeta "La Doc" de Drive (`NOMBRE_CARPETA`, no cambiarla o se pierde el respaldo) y proyecto de Google Cloud.
 - Los íconos (`public/icons/*`, `public/favicon.png`) salen del retrato de Desi con bata, recortado en la cara; el maskable deja la cara dentro de la zona segura del 80 %.
+
+## Estudiar un tema (v0.24.0)
+- Manuel pidió (2026-10-29) poder estudiar cualquier tema cuando ella quiera, no solo el Repaso de hoy (que solo trae las vencidas y 20 nuevas por día).
+- `src/core/srs/estudio.ts` + `src/features/review/Estudiar.tsx`; rutas `#/estudiar`, `#/estudiar/tema/<id>`, `#/estudiar/materia/<id>`. La ficha, botones y 🔊 son el componente compartido `FichaEnPantalla` (también lo usa `Repaso`).
+- «Contar para mi repaso» viene apagado: el estudio libre no toca FSRS salvo que ella lo encienda.

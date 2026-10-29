@@ -202,7 +202,7 @@
       <li><a href="#materias"><span>3</span>Materias y temas</a></li>
       <li><a href="#notas"><span>4</span>Fármacos, patologías y casos</a></li>
       <li><a href="#enlaces"><span>5</span>Enlaces entre notas</a></li>
-      <li><a href="#repaso"><span>6</span>Repaso de hoy</a></li>
+      <li><a href="#repaso"><span>6</span>Repaso y estudiar un tema</a></li>
       <li><a href="#escuchar"><span>7</span>Escuchar como podcast</a></li>
       <li><a href="#ia"><span>8</span>Cargar con IA</a></li>
       <li><a href="#respaldo"><span>9</span>Respaldo en Google Drive</a></li>
@@ -242,7 +242,7 @@
       <span>Hay una versión nueva de Doc Desi.</span>
       <div><span class="btn">Actualizar</span> <span class="btn sec">Después</span></div>
     </div>
-    <p>La versión que tienes se ve <strong>al final de la pantalla de Inicio</strong> (por ejemplo «Versión 0.23.0»).</p>
+    <p>La versión que tienes se ve <strong>al final de la pantalla de Inicio</strong> (por ejemplo «Versión 0.24.0»).</p>
     <h3>El nombre o el ícono no cambian</h3>
     <p>Si instalaste la app antes de que se llamara «Doc Desi», el teléfono puede seguir mostrando el nombre y el ícono viejos, aunque por dentro ya esté actualizada. En Android suele cambiar solo en uno o dos días. Para verlo ya (y siempre en iPhone): primero <span class="btn">Respaldar ahora</span>, luego borra el ícono de la pantalla de inicio, instálala otra vez (pasos de arriba) y toca <span class="btn">Sí, recuperar mi respaldo</span>.</p>
     <h3>Si sigues viendo una versión vieja</h3>
@@ -262,6 +262,7 @@
       <div class="filas">
         <div><span><strong>Doc Desi</strong> · 🔍 · <small>Con internet</small></span><small>barra de arriba</small></div>
         <div><span><strong>Repaso de hoy</strong><br><small>12 fichas pendientes</small></span><span class="btn">Repasar</span></div>
+        <div><span><strong>📚 Estudiar un tema</strong></span><small>sección 6</small></div>
         <div><span><strong>🎧 Escuchar mis fichas</strong></span><small>sección 7</small></div>
         <div><span><strong>Farmacología 1</strong> <small>· 2 temas · 3 fármacos</small></span><small>›</small></div>
         <div><span><strong>Morfofisiopatología 2</strong></span><small>›</small></div>
@@ -274,7 +275,7 @@
     <ul>
       <li><strong>🔍 Buscar</strong>: arriba a la derecha. Escribe el nombre de un fármaco, una patología, un caso o una etiqueta y toca el resultado para abrir la nota.</li>
       <li><strong>Con internet / Sin internet</strong>: te dice si el teléfono tiene conexión ahora. Sin internet casi todo funciona igual (sección 11).</li>
-      <li>«Repaso de hoy» solo aparece cuando tienes fichas para repasar o ya repasaste algo hoy.</li>
+      <li>«Repaso de hoy» solo aparece cuando tienes fichas para repasar o ya repasaste algo hoy. Para estudiar cuando quieras, usa <strong>📚 Estudiar un tema</strong>.</li>
     </ul>
   </section>
 
@@ -348,7 +349,7 @@
   </section>
 
   <section id="repaso">
-    <h2><span class="num">6</span>Repaso de hoy</h2>
+    <h2><span class="num">6</span>Repaso y estudiar un tema</h2>
     <p>La app decide qué fichas te toca repasar cada día, como Anki: lo que te cuesta vuelve pronto y lo que sabes bien vuelve más tarde.</p>
     <ol class="pasos">
       <li>En Inicio toca <span class="btn">Repasar</span>.</li>
@@ -368,6 +369,26 @@
       </table>
     </div>
     <p>Cuando terminas sale «¡Listo por hoy!». El repaso funciona sin internet.</p>
+    <h3>Estudiar un tema cuando tú quieras</h3>
+    <p>El Repaso de hoy solo muestra las fichas que te tocan hoy (y hasta 20 nuevas por día). Para estudiar un tema completo a tu ritmo, sin esperar, entra por cualquiera de estos lugares:</p>
+    <ul>
+      <li>En Inicio, la tarjeta <strong>📚 Estudiar un tema</strong>: eliges <span class="btn sec">Toda la materia</span> o un tema de la lista.</li>
+      <li>Dentro de un tema: <span class="btn sec">📚 Estudiar este tema</span> (incluye sus subtemas).</li>
+      <li>Al abrir una materia en Inicio: <span class="btn sec">📚 Estudiar la materia</span>.</li>
+      <li>Al terminar el Repaso de hoy: <span class="btn">📚 Estudiar un tema</span>.</li>
+    </ul>
+    <p>Antes de empezar eliges el <strong>Orden</strong> (<em>En orden</em> o <em>Mezcladas</em>) y si quieres <strong>Contar para mi repaso</strong>. Toca <span class="btn">▶ Empezar</span>. La ficha, los botones y el 🔊 son los mismos del repaso, pero aquí:</p>
+    <div class="tabla">
+      <table>
+        <thead><tr><th>Botón</th><th>En estudio libre</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Mal</strong> · otra vez</td><td>La ficha vuelve en un momento, dentro de la misma sesión.</td></tr>
+          <tr><td><strong>Difícil</strong> · al final</td><td>Vuelve al final de la vuelta.</td></tr>
+          <tr><td><strong>Bien</strong> / <strong>Fácil</strong> · lista</td><td>Sale de la sesión.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Contar para mi repaso</strong> viene apagado: así estudiar de más no cambia tu Repaso de hoy. Si lo enciendes, tus respuestas cuentan como un repaso normal y cambian cuándo vuelve cada ficha. Al terminar puedes dar <span class="btn">Otra vuelta</span> o <span class="btn sec">Elegir otro tema</span>.</p>
   </section>
 
   <section id="escuchar">
@@ -467,7 +488,7 @@
         <thead><tr><th>Sin internet funciona</th><th>Necesita internet</th></tr></thead>
         <tbody>
           <tr><td>Ver, crear y editar notas</td><td>Que la IA procese las cargas (quedan en cola)</td></tr>
-          <tr><td>Repaso de hoy</td><td>Respaldo y recuperación en Drive (se hace al volver)</td></tr>
+          <tr><td>Repaso de hoy y estudiar un tema</td><td>Respaldo y recuperación en Drive (se hace al volver)</td></tr>
           <tr><td>Buscar y enlaces</td><td>Descargar la voz neuronal (una vez)</td></tr>
           <tr><td>Escuchar con la voz del teléfono o la neuronal ya descargada</td><td>Recibir versiones nuevas de la app</td></tr>
           <tr><td>Tomar fotos y grabar para la IA (se guardan en la cola)</td><td>Poner y probar las claves de IA</td></tr>
@@ -639,16 +660,16 @@
         <dt>Qué hacer</dt><dd>Instala la app en la pantalla de inicio y deja el respaldo de Drive vinculado.</dd></dl>
       </article>
       <article class="error">
-        <p class="msj aviso">No hay fichas para repasar</p>
-        <dl><dt>Qué es</dt><dd>No es error: hoy no te toca ninguna, o todavía no tienes notas.</dd>
-        <dt>Qué hacer</dt><dd>Crea notas o carga material con IA. Mañana tendrás fichas nuevas.</dd></dl>
+        <p class="msj aviso">No hay fichas para repasar / ¡Listo por hoy!</p>
+        <dl><dt>Qué es</dt><dd>No es error: hoy no te toca ninguna, ya hiciste las de hoy, o todavía no tienes notas.</dd>
+        <dt>Qué hacer</dt><dd>Para seguir estudiando ahora, toca <span class="btn">📚 Estudiar un tema</span> y elige el tema. Si no tienes notas, créalas o carga material con IA.</dd></dl>
       </article>
     </div>
 
     <p class="sin-resultados" id="sin-resultados" hidden>No hay ningún mensaje con esa palabra. Manda una captura de pantalla del mensaje para revisarlo.</p>
   </section>
 
-  <p class="pie">Si algo no aparece aquí, toma una captura de pantalla del mensaje completo (con el número de versión del final de Inicio) y mándala. Manual para Doc Desi 0.23.0.</p>
+  <p class="pie">Si algo no aparece aquí, toma una captura de pantalla del mensaje completo (con el número de versión del final de Inicio) y mándala. Manual para Doc Desi 0.24.0.</p>
 </div>
 <script>
   (function () {

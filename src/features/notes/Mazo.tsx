@@ -99,6 +99,11 @@ export function Mazo({ id }: { id: Id }) {
             </a>
           ))}
           {notas.length > 0 && (
+            <a className="boton-secundario" href={`#/estudiar/tema/${id}`}>
+              📚 Estudiar este tema
+            </a>
+          )}
+          {notas.length > 0 && (
             <a className="boton-secundario" href={`#/escuchar/${id}`}>
               🎧 Escuchar el mazo
             </a>
