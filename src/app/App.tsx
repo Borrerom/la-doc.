@@ -19,6 +19,7 @@ import { SelectorTema } from '../features/ajustes/SelectorTema'
 import { PruebaAudio } from '../features/podcast/PruebaAudio'
 import { Buscar } from '../features/search/Buscar'
 import { Repaso } from '../features/review/Repaso'
+import { ElegirEstudio, Estudiar } from '../features/review/Estudiar'
 import { ResumenRepaso } from '../features/review/ResumenRepaso'
 import { AvisoActualizacion } from './AvisoActualizacion'
 import { useConexion } from './useConexion'
@@ -48,6 +49,11 @@ function Inicio() {
   return (
     <main>
       <ResumenRepaso />
+
+      <a className="tarjeta enlace" href="#/estudiar">
+        <h2>📚 Estudiar un tema</h2>
+        <p>Elige una materia o un tema y estudia sus fichas cuando quieras, a tu ritmo.</p>
+      </a>
 
       <a className="tarjeta enlace destacada" href="#/escuchar">
         <h2>🎧 Escuchar mis fichas</h2>
@@ -145,6 +151,12 @@ function App() {
         <Buscar />
       ) : ruta === '/repaso' ? (
         <Repaso />
+      ) : ruta === '/estudiar' ? (
+        <ElegirEstudio />
+      ) : ruta.startsWith('/estudiar/tema/') ? (
+        <Estudiar key={ruta} origen={{ mazoId: ruta.slice('/estudiar/tema/'.length) }} />
+      ) : ruta.startsWith('/estudiar/materia/') ? (
+        <Estudiar key={ruta} origen={{ materiaId: ruta.slice('/estudiar/materia/'.length) }} />
       ) : ruta === '/prueba-audio' ? (
         <PruebaAudio />
       ) : ruta.startsWith('/tipo/') ? (

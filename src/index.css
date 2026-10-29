@@ -1021,3 +1021,38 @@ details.mas-opciones > .tarjeta {
   font-size: 0.85rem;
   color: var(--texto-suave);
 }
+
+/* Estudiar un tema */
+.estudiar-ajustes .casilla {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 14px;
+}
+
+.estudiar-ajustes .casilla input {
+  margin-top: 5px;
+}
+
+.estudiar-ajustes .casilla small {
+  display: block;
+  color: var(--texto-suave);
+}
+
+.estudiar-ajustes > button {
+  width: 100%;
+  margin-top: 14px;
+  padding: 14px;
+}
+
+.fila.centrada {
+  justify-content: center;
+}
+
+.subtemas {
+  padding-left: 18px;
+}
+
+.subtemas .lista {
+  margin: 0;
+}

@@ -122,6 +122,11 @@ function MateriaDesplegable({ materia, abierta, alCambiar }: { materia: Materia;
           <button type="button" className="secundario" onClick={() => setAgregando(true)}>
             + Nuevo tema
           </button>
+          {temas && temas.length > 0 && (
+            <a className="boton-secundario" href={`#/estudiar/materia/${materia.id}`}>
+              📚 Estudiar la materia
+            </a>
+          )}
           <a className="boton-secundario" href={`#/materia/${materia.id}`}>
             ⚙ Organizar temas
           </a>

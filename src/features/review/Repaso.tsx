@@ -1,18 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { callar, hablar, textoParaLeer } from '../../core/audio/vozTelefono'
-import { guardarAjustesAudio, useAjustesAudio } from '../../core/db/ajustes'
 import { db } from '../../core/db/db'
 import { verFicha, type FichaVista } from '../../core/db/fichas'
 import type { Calificacion } from '../../core/model/tipos'
-import { previsualizar, textoIntervalo } from '../../core/srs/fsrs'
+import { previsualizar } from '../../core/srs/fsrs'
 import { armarCola, registrarRespuesta, repasadasHoy, type Cola, type FichaEnCola } from '../../core/srs/repaso'
-
-const BOTONES: { valor: Calificacion; texto: string; clase: string }[] = [
-  { valor: 1, texto: 'Mal', clase: 'mal' },
-  { valor: 2, texto: 'Difícil', clase: 'dificil' },
-  { valor: 3, texto: 'Bien', clase: 'bien' },
-  { valor: 4, texto: 'Fácil', clase: 'facil' },
-]
+import { FichaEnPantalla } from './FichaEnPantalla'
 
 type Actual = { item: FichaEnCola; vista: FichaVista; inicio: number; intervalos: Record<Calificacion, number> }
 
@@ -22,22 +14,6 @@ export function Repaso() {
   const [respuestaVisible, setRespuestaVisible] = useState(false)
   const [hechasHoy, setHechasHoy] = useState(0)
   const guardando = useRef(false)
-  const ajustes = useAjustesAudio()
-  const leer = ajustes.leerEnRepaso
-  const [errorVoz, setErrorVoz] = useState<string | null>(null)
-
-  // Lectura en voz alta: la pregunta al aparecer y la respuesta al mostrarla.
-  useEffect(() => {
-    if (!leer || !actual) return
-    callar()
-    const texto = respuestaVisible ? actual.vista.reverso : actual.vista.frente
-    hablar(textoParaLeer(texto), ajustes.velocidad).then(
-      () => setErrorVoz(null),
-      (e: unknown) => setErrorVoz(e instanceof Error ? e.message : String(e)),
-    )
-  }, [leer, actual, respuestaVisible, ajustes.velocidad])
-
-  useEffect(() => () => callar(), [])
 
   const cargar = useCallback(async () => {
     const ahora = Date.now()
@@ -85,60 +61,30 @@ export function Repaso() {
               ? `Repasaste ${hechasHoy} ${hechasHoy === 1 ? 'ficha' : 'fichas'} hoy. Las demás vuelven cuando toca.`
               : 'Carga fármacos, patologías o casos en tus temas y sus fichas aparecerán aquí.'}
           </p>
+          <p>Si quieres seguir, estudia el tema que tú elijas, a tu ritmo.</p>
+          <a className="boton" href="#/estudiar">
+            📚 Estudiar un tema
+          </a>
         </section>
       </main>
     )
   }
 
-  const { intervalos } = actual
   const pendientes = cola.ahora.length + cola.luego.length
 
   return (
-    <main>
-      <div className="repaso-barra">
-        <a href="#/" className="volver">
-          ← Salir
-        </a>
-        <span className="barra-derecha">
-          <button
-            type="button"
-            className={leer ? 'icono activo' : 'icono'}
-            aria-pressed={leer}
-            aria-label="Leer en voz alta"
-            onClick={() => {
-              if (leer) callar()
-              void guardarAjustesAudio({ leerEnRepaso: !leer })
-            }}
-          >
-            {leer ? '🔊' : '🔈'}
-          </button>
-          {leer && errorVoz && <span className="texto-error">{errorVoz}</span>}
+    <FichaEnPantalla
+      vista={actual.vista}
+      respuestaVisible={respuestaVisible}
+      alMostrar={() => setRespuestaVisible(true)}
+      alResponder={(c) => void responder(c)}
+      intervalos={actual.intervalos}
+      salir={{ href: '#/', texto: '← Salir' }}
+      estado={
+        <>
           {actual.item.nueva && <span className="etiqueta-nueva">Nueva</span>} Quedan {pendientes}
-        </span>
-      </div>
-      <section className="tarjeta repaso-ficha" aria-live="polite">
-        <p className="repaso-frente">{actual.vista.frente}</p>
-        {respuestaVisible && (
-          <>
-            <hr />
-            <p className="repaso-reverso">{actual.vista.reverso}</p>
-          </>
-        )}
-      </section>
-      {respuestaVisible ? (
-        <div className="botones-calificar">
-          {BOTONES.map((b) => (
-            <button key={b.valor} type="button" className={b.clase} onClick={() => responder(b.valor)}>
-              <span>{b.texto}</span>
-              <small>{textoIntervalo(intervalos[b.valor])}</small>
-            </button>
-          ))}
-        </div>
-      ) : (
-        <button type="button" className="mostrar-respuesta" onClick={() => setRespuestaVisible(true)}>
-          Mostrar respuesta
-        </button>
-      )}
-    </main>
+        </>
+      }
+    />
   )
 }
